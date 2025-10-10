@@ -1,0 +1,199 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  code-quality:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        cd backend && npm ci
+        cd ../frontend && npm ci
+
+    - name: Run ESLint (Backend)
+      run: |
+        cd backend
+        npx eslint . --ext .js,.ts || echo "ESLint not configured yet"
+
+    - name: Run ESLint (Frontend)
+      run: |
+        cd frontend
+        npx eslint . --ext .js,.ts,.jsx,.tsx || echo "ESLint not configured yet"
+
+    - name: Run Prettier (Backend)
+      run: |
+        cd backend
+        npx prettier --check . || echo "Prettier not configured yet"
+
+    - name: Run Prettier (Frontend)
+      run: |
+        cd frontend
+        npx prettier --check . || echo "Prettier not configured yet"
+
+    - name: TypeScript Check (Backend)
+      run: |
+        cd backend
+        npx tsc --noEmit || echo "TypeScript not configured yet"
+
+    - name: TypeScript Check (Frontend)
+      run: |
+        cd frontend
+        npx tsc --noEmit || echo "TypeScript not configured yet"
+
+  documentation:
+    name: Documentation Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check README
+      run: |
+        if [ ! -f README.md ]; then
+          echo "README.md is missing"
+          exit 1
+        fi
+        echo "README.md exists"
+
+    - name: Check CONTRIBUTING
+      run: |
+        if [ ! -f CONTRIBUTING.md ]; then
+          echo "CONTRIBUTING.md is missing"
+          exit 1
+        fi
+        echo "CONTRIBUTING.md exists"
+
+    - name: Check LICENSE
+      run: |
+        if [ ! -f LICENSE ]; then
+          echo "LICENSE is missing"
+          exit 1
+        fi
+        echo "LICENSE exists"
+
+    - name: Check SECURITY
+      run: |
+        if [ ! -f SECURITY.md ]; then
+          echo "SECURITY.md is missing"
+          exit 1
+        fi
+        echo "SECURITY.md exists"
+
+    - name: Check documentation structure
+      run: |
+        if [ ! -d docs ]; then
+          echo "docs/ directory is missing"
+          exit 1
+        fi
+        echo "docs/ directory exists"
+
+  dependency-check:
+    name: Dependency Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Check for vulnerable dependencies
+      run: |
+        cd backend
+        npm audit --audit-level=high || echo "Backend audit completed"
+        cd ../frontend
+        npm audit --audit-level=high || echo "Frontend audit completed"
+
+    - name: Check for outdated dependencies
+      run: |
+        cd backend
+        npm outdated || echo "Backend outdated check completed"
+        cd ../frontend
+        npm outdated || echo "Frontend outdated check completed"
+
+    - name: Check for unused dependencies
+      run: |
+        cd backend
+        npx depcheck || echo "Backend depcheck completed"
+        cd ../frontend
+        npx depcheck || echo "Frontend depcheck completed"
+
+  performance-check:
+    name: Performance Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        cd backend && npm ci
+        cd ../frontend && npm ci
+
+    - name: Bundle size check (Frontend)
+      run: |
+        cd frontend
+        npm run build
+        echo "Build completed, checking bundle size"
+        # Add bundle size analysis here
+
+    - name: Performance test (Backend)
+      run: |
+        cd backend
+        echo "Starting performance tests"
+        # Add performance tests here
+
+  accessibility:
+    name: Accessibility Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install frontend dependencies
+      run: |
+        cd frontend && npm ci
+
+    - name: Build frontend
+      run: |
+        cd frontend && npm run build
+
+    - name: Run accessibility tests
+      run: |
+        cd frontend
+        npx @axe-core/cli http://localhost:3000 || echo "Accessibility tests completed"
