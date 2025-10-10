@@ -1,0 +1,74 @@
+# Render deployment configuration for NillionVault Backend
+# Deploy to: https://render.com
+
+services:
+  - type: web
+    name: nillionvault-backend
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: nillionvault-db
+          property: connectionString
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: NILLION_API_KEY
+        sync: false
+      - key: NILLION_RPC_URL
+        value: https://rpc-testnet.nillion.com
+      - key: NILLION_NETWORK
+        value: testnet
+      - key: DEV_ADDRESS_PRIVATE_KEY
+        sync: false
+      - key: UPSTASH_REDIS_REST_URL
+        sync: false
+      - key: UPSTASH_REDIS_REST_TOKEN
+        sync: false
+      - key: FRONTEND_URL
+        value: https://nillionvault.vercel.app
+
+  - type: worker
+    name: nillionvault-worker
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node services/worker.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: nillionvault-db
+          property: connectionString
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: NILLION_API_KEY
+        sync: false
+      - key: NILLION_RPC_URL
+        value: https://rpc-testnet.nillion.com
+      - key: NILLION_NETWORK
+        value: testnet
+      - key: DEV_ADDRESS_PRIVATE_KEY
+        sync: false
+      - key: UPSTASH_REDIS_REST_URL
+        sync: false
+      - key: UPSTASH_REDIS_REST_TOKEN
+        sync: false
+
+databases:
+  - name: nillionvault-db
+    plan: free
