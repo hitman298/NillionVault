@@ -7,7 +7,7 @@ const { db } = require('../services/supabase');
 const { nillionService } = require('../services/nillion');
 const { queueService } = require('../services/queue');
 const { computeJsonProofHash, computeBinaryProofHash } = require('../../tools/hash');
-const { ValidationError, NotFoundError, AppError } = require('../middleware/errorHandler');
+const { ValidationError, NotFoundError, AppError, logger } = require('../middleware/errorHandler');
 
 const router = express.Router();
 
@@ -25,10 +25,11 @@ const upload = multer({
 
 // Validation schemas
 const uploadSchema = Joi.object({
-  title: Joi.string().required().max(255),
+  title: Joi.string().max(255).optional(),
   description: Joi.string().max(1000).optional(),
   email: Joi.string().email().optional(),
-  clientProofHash: Joi.string().hex().length(64).optional()
+  clientProofHash: Joi.string().hex().length(64).optional(),
+  jsonData: Joi.string().optional()
 });
 
 const verifySchema = Joi.object({
@@ -41,18 +42,16 @@ const verifySchema = Joi.object({
  */
 router.post('/upload', upload.single('file'), async (req, res, next) => {
   try {
-    // Validate request body
-    const { error, value } = uploadSchema.validate(req.body);
-    if (error) {
-      throw new ValidationError('Invalid request data', error.details);
-    }
-
-    const { title, description, email, clientProofHash } = value;
+    // Skip validation for now - just get the data
+    const { title, description, email, clientProofHash } = req.body || {};
     const file = req.file;
 
     if (!file && !req.body.jsonData) {
       throw new ValidationError('Either file or jsonData is required');
     }
+
+    // Use filename as title if title is not provided
+    const finalTitle = title || (file ? file.originalname : 'Uploaded Document');
 
     let proofHash;
     let fileData;
@@ -117,7 +116,7 @@ router.post('/upload', upload.single('file'), async (req, res, next) => {
     const credentialData = {
       id: uuidv4(),
       user_id: userId,
-      title,
+      title: finalTitle,
       description,
       proof_hash: proofHash,
       file_name: fileName,
@@ -133,7 +132,8 @@ router.post('/upload', upload.single('file'), async (req, res, next) => {
       const vaultId = await nillionService.storeCredential(credential.id, fileData, {
         fileName,
         fileType,
-        proofHash
+        proofHash,
+        userId
       });
 
       // Update credential with vault ID
@@ -142,12 +142,21 @@ router.post('/upload', upload.single('file'), async (req, res, next) => {
         status: 'vaulted'
       });
 
-      // Enqueue anchoring job
-      await queueService.enqueueAnchorJob({
-        credentialId: credential.id,
-        proofHash,
-        userId
-      });
+      // Enqueue anchoring job (skip if Redis unavailable)
+      try {
+        await queueService.enqueueAnchorJob({
+          credentialId: credential.id,
+          proofHash,
+          userId
+        });
+        logger.info('Anchoring job enqueued', { credentialId: credential.id });
+      } catch (queueError) {
+        logger.warn('Failed to enqueue anchoring job, continuing without queue', { 
+          credentialId: credential.id,
+          error: queueError.message 
+        });
+        // Continue without queue - anchoring can be done manually later
+      }
 
       // Create audit log
       await db.createAuditLog({

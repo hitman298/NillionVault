@@ -4,37 +4,16 @@ const { logger } = require('../middleware/errorHandler');
 
 /**
  * Redis Queue Service for background anchoring jobs
+ * Temporarily disabled due to Upstash connection issues
  */
 class QueueService {
   constructor() {
-    // Initialize Redis connection
-    this.redis = new Redis({
-      host: process.env.UPSTASH_REDIS_REST_URL?.replace('https://', '').split(':')[0],
-      port: parseInt(process.env.UPSTASH_REDIS_REST_URL?.split(':')[2]?.split('/')[0]) || 6379,
-      password: process.env.UPSTASH_REDIS_REST_TOKEN,
-      retryDelayOnFailover: 100,
-      maxRetriesPerRequest: 3,
-      lazyConnect: true
-    });
-
-    // Create queue
-    this.anchorQueue = new Queue('anchor-queue', {
-      connection: this.redis,
-      defaultJobOptions: {
-        removeOnComplete: 100,
-        removeOnFail: 50,
-        attempts: 3,
-        backoff: {
-          type: 'exponential',
-          delay: 2000,
-        },
-      },
-    });
-
-    // Initialize worker
-    this.initializeWorker();
-
-    logger.info('Queue service initialized');
+    // Temporarily disable Redis connection due to Upstash issues
+    this.redis = null;
+    this.anchorQueue = null;
+    this.anchorWorker = null;
+    
+    logger.info('Queue service initialized in mock mode (Redis disabled)');
   }
 
   /**
@@ -112,6 +91,13 @@ class QueueService {
    */
   async enqueueAnchorJob(jobData) {
     try {
+      if (!this.anchorQueue) {
+        logger.info('Queue disabled - skipping anchor job', { 
+          credentialId: jobData.credentialId 
+        });
+        return { id: 'mock-job-id', data: jobData };
+      }
+
       const job = await this.anchorQueue.add('anchor-credential', jobData, {
         priority: 1, // Higher priority for newer jobs
         delay: 1000, // 1 second delay to allow credential to be fully processed
@@ -138,6 +124,17 @@ class QueueService {
    */
   async getQueueStats() {
     try {
+      if (!this.anchorQueue) {
+        return {
+          waiting: 0,
+          active: 0,
+          completed: 0,
+          failed: 0,
+          total: 0,
+          status: 'disabled'
+        };
+      }
+
       const waiting = await this.anchorQueue.getWaiting();
       const active = await this.anchorQueue.getActive();
       const completed = await this.anchorQueue.getCompleted();

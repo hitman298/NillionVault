@@ -10,12 +10,12 @@ const { logger } = require('../middleware/errorHandler');
  */
 class AnchorService {
   constructor() {
-    this.rpcUrl = process.env.NILLION_RPC_URL;
-    this.privateKey = process.env.DEV_ADDRESS_PRIVATE_KEY;
+    this.rpcUrl = process.env.NILCHAIN_URL;
+    this.privateKey = process.env.BUILDER_PRIVATE_KEY;
     this.network = process.env.NILLION_NETWORK || 'testnet';
     
     if (!this.rpcUrl || !this.privateKey) {
-      throw new Error('NILLION_RPC_URL and DEV_ADDRESS_PRIVATE_KEY are required');
+      throw new Error('NILCHAIN_URL and BUILDER_PRIVATE_KEY are required');
     }
 
     this.client = axios.create({

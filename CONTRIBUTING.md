@@ -5,119 +5,225 @@ Thank you for your interest in contributing to NillionVault! This document provi
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ and npm
+- Node.js 18+
 - Git
-- Basic understanding of blockchain and privacy-preserving technologies
+- GitHub account
+- Basic understanding of JavaScript/Node.js
 
 ### Development Setup
-1. Fork the repository
-2. Clone your fork: `git clone https://github.com/your-username/NillionVault.git`
-3. Install dependencies: `./scripts/setup.sh`
-4. Follow the setup guide in [GETTING-STARTED.md](GETTING-STARTED.md)
 
-## 📋 How to Contribute
+1. **Fork the repository**
+   ```bash
+   # Click "Fork" button on GitHub, then clone your fork
+   git clone https://github.com/YOUR_USERNAME/NillionVault.git
+   cd NillionVault
+   ```
 
-### Reporting Issues
-- Use GitHub Issues to report bugs or request features
-- Provide clear, detailed descriptions
-- Include steps to reproduce for bugs
-- Add relevant labels
+2. **Set up development environment**
+   ```bash
+   # Install backend dependencies
+   cd backend && npm install && cd ..
+   
+   # Install frontend dependencies
+   cd frontend && npm install && cd ..
+   ```
 
-### Code Contributions
-1. Create a feature branch: `git checkout -b feature/your-feature-name`
-2. Make your changes
-3. Add tests if applicable
-4. Ensure code follows our style guidelines
-5. Commit with clear messages
-6. Push to your fork
-7. Create a Pull Request
+3. **Configure environment**
+   ```bash
+   # Copy environment template
+   cp backend/env.example backend/.env
+   
+   # Edit backend/.env with your development credentials
+   ```
 
-### Code Style Guidelines
-- Use TypeScript for new code
-- Follow existing code patterns
-- Add JSDoc comments for functions
-- Use meaningful variable and function names
-- Keep functions small and focused
-
-## 🧪 Testing
-
-### Running Tests
-```bash
-# Backend tests
-cd backend && npm test
-
-# Frontend tests
-cd frontend && npm test
-
-# Integration tests
-cd backend && node test-nillion-integration.js
-```
-
-### Test Coverage
-- Aim for >80% test coverage
-- Test both success and error cases
-- Include integration tests for critical paths
-
-## 📚 Documentation
-
-### Documentation Standards
-- Update README.md for significant changes
-- Add JSDoc comments for new functions
-- Update API documentation for backend changes
-- Include examples in documentation
-
-### Documentation Files
-- `README.md` - Main project overview
-- `GETTING-STARTED.md` - Setup instructions
-- `docs/` - Detailed documentation
-- `CONTRIBUTING.md` - This file
-
-## 🔒 Security
-
-### Security Guidelines
-- Never commit secrets or API keys
-- Use environment variables for sensitive data
-- Follow secure coding practices
-- Report security vulnerabilities privately
-
-### Reporting Security Issues
-- Email security issues to: [your-email]
-- Do not create public issues for security vulnerabilities
-- Include detailed reproduction steps
+4. **Start development servers**
+   ```bash
+   # Terminal 1 - Backend
+   cd backend && npm start
+   
+   # Terminal 2 - Frontend
+   cd frontend && npm start
+   ```
 
 ## 🎯 Areas for Contribution
 
 ### High Priority
-- Real Nillion SecretVaults SDK integration
-- nilChain testnet transaction improvements
-- Enhanced error handling and logging
-- Performance optimizations
+- **Nillion Integration**: Improve SecretVaults SDK integration
+- **Performance**: Optimize upload and verification speeds
+- **Error Handling**: Enhance error messages and recovery
+- **Testing**: Add comprehensive test coverage
 
 ### Medium Priority
-- Additional file format support
-- Batch anchoring with Merkle trees
-- Advanced verification features
-- UI/UX improvements
+- **UI/UX**: Improve user interface and experience
+- **Mobile**: Enhance mobile responsiveness
+- **Security**: Add additional security features
+- **Monitoring**: Implement analytics and logging
 
 ### Low Priority
-- Additional deployment options
-- Documentation improvements
-- Test coverage improvements
-- Code refactoring
+- **Documentation**: Improve documentation and examples
+- **Internationalization**: Add multi-language support
+- **Themes**: Add dark mode and theme options
 
-## 📝 Pull Request Process
+## 📝 Development Guidelines
+
+### Code Style
+- Use consistent indentation (2 spaces)
+- Follow existing code patterns
+- Add comments for complex logic
+- Use meaningful variable names
+
+### Git Workflow
+1. **Create a feature branch**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **Make your changes**
+   - Write clean, readable code
+   - Test your changes thoroughly
+   - Update documentation if needed
+
+3. **Commit your changes**
+   ```bash
+   git add .
+   git commit -m "feat: add your feature description"
+   ```
+
+4. **Push and create PR**
+   ```bash
+   git push origin feature/your-feature-name
+   # Create Pull Request on GitHub
+   ```
+
+### Commit Message Format
+Use conventional commits format:
+- `feat:` New features
+- `fix:` Bug fixes
+- `docs:` Documentation changes
+- `style:` Code style changes
+- `refactor:` Code refactoring
+- `test:` Adding tests
+- `chore:` Maintenance tasks
+
+Examples:
+```
+feat: add drag and drop file upload
+fix: resolve hash verification issue
+docs: update deployment guide
+style: improve button styling
+```
+
+## 🧪 Testing
+
+### Manual Testing
+1. **Upload Testing**
+   - Test with various JSON file sizes
+   - Test drag & drop functionality
+   - Test file validation
+
+2. **Verification Testing**
+   - Test hash verification
+   - Test with invalid hashes
+   - Test error handling
+
+3. **UI Testing**
+   - Test on different screen sizes
+   - Test with different browsers
+   - Test accessibility features
+
+### Automated Testing (Future)
+We plan to add:
+- Unit tests for backend services
+- Integration tests for API endpoints
+- Frontend component tests
+- End-to-end testing
+
+## 🐛 Bug Reports
+
+When reporting bugs, please include:
+
+1. **Environment Information**
+   - Operating System
+   - Node.js version
+   - Browser version (if applicable)
+
+2. **Steps to Reproduce**
+   - Clear, numbered steps
+   - Expected vs actual behavior
+
+3. **Additional Context**
+   - Screenshots (if applicable)
+   - Error messages
+   - Relevant logs
+
+### Bug Report Template
+```markdown
+**Bug Description**
+Brief description of the bug.
+
+**Steps to Reproduce**
+1. Go to '...'
+2. Click on '...'
+3. See error
+
+**Expected Behavior**
+What you expected to happen.
+
+**Actual Behavior**
+What actually happened.
+
+**Environment**
+- OS: [e.g. Windows 10]
+- Node.js: [e.g. 18.17.0]
+- Browser: [e.g. Chrome 119]
+
+**Additional Context**
+Any other relevant information.
+```
+
+## 💡 Feature Requests
+
+When requesting features, please include:
+
+1. **Feature Description**
+   - Clear description of the feature
+   - Use cases and benefits
+
+2. **Implementation Ideas**
+   - How you think it could be implemented
+   - Any technical considerations
+
+3. **Alternatives Considered**
+   - Other approaches you've considered
+
+### Feature Request Template
+```markdown
+**Feature Description**
+Brief description of the feature.
+
+**Use Case**
+Why would this feature be useful?
+
+**Implementation Ideas**
+How could this be implemented?
+
+**Additional Context**
+Any other relevant information.
+```
+
+## 📋 Pull Request Process
 
 ### Before Submitting
-1. Ensure all tests pass
-2. Update documentation if needed
-3. Add/update tests for new features
-4. Follow the code style guidelines
-5. Update CHANGELOG.md if applicable
+- [ ] Code follows project style guidelines
+- [ ] Self-review completed
+- [ ] Changes tested locally
+- [ ] Documentation updated (if needed)
+- [ ] No console.log statements left in code
 
-### PR Description Template
+### PR Template
 ```markdown
 ## Description
-Brief description of changes
+Brief description of changes.
 
 ## Type of Change
 - [ ] Bug fix
@@ -126,45 +232,57 @@ Brief description of changes
 - [ ] Documentation update
 
 ## Testing
-- [ ] Tests pass locally
-- [ ] Integration tests pass
 - [ ] Manual testing completed
+- [ ] No regressions introduced
+- [ ] Cross-browser testing (if applicable)
+
+## Screenshots (if applicable)
+Add screenshots to help explain your changes.
 
 ## Checklist
 - [ ] Code follows style guidelines
 - [ ] Self-review completed
 - [ ] Documentation updated
-- [ ] Tests added/updated
+- [ ] No console.log statements
 ```
 
 ## 🤝 Community Guidelines
 
-### Code of Conduct
-- Be respectful and inclusive
-- Help others learn and grow
-- Provide constructive feedback
-- Follow GitHub's Community Guidelines
+### Be Respectful
+- Use welcoming and inclusive language
+- Be respectful of differing viewpoints
+- Accept constructive criticism gracefully
 
-### Communication
-- Use GitHub Discussions for questions
-- Be patient with responses
-- Provide clear, detailed information
-- Help others when you can
+### Be Collaborative
+- Help others when possible
+- Share knowledge and experience
+- Work together toward common goals
+
+### Be Professional
+- Stay on topic in discussions
+- Keep conversations constructive
+- Follow GitHub's code of conduct
+
+## 📞 Getting Help
+
+### Resources
+- **Documentation**: Check [docs/](docs/) folder
+- **Issues**: Search existing [GitHub Issues](https://github.com/hitman298/NillionVault/issues)
+- **Discussions**: Use [GitHub Discussions](https://github.com/hitman298/NillionVault/discussions)
+
+### Contact
+- **Maintainer**: [@hitman298](https://github.com/hitman298)
+- **Nillion Community**: [Nillion Discord](https://discord.gg/nillion)
 
 ## 📄 License
 
-By contributing to NillionVault, you agree that your contributions will be licensed under the MIT License.
+By contributing to NillionVault, you agree that your contributions will be licensed under the [MIT License](LICENSE).
 
-## 🆘 Getting Help
+## 🙏 Recognition
 
-### Resources
-- [Nillion Documentation](https://docs.nillion.com)
-- [GitHub Discussions](https://github.com/hitman298/NillionVault/discussions)
-- [Issues](https://github.com/hitman298/NillionVault/issues)
-
-### Contact
-- Create an issue for technical questions
-- Use Discussions for general questions
-- Email for security issues
+Contributors will be recognized in:
+- README.md contributors section
+- Release notes for significant contributions
+- GitHub contributor graphs
 
 Thank you for contributing to NillionVault! 🎉
