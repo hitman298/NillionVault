@@ -771,7 +771,7 @@
                     const formData = new FormData();
                     formData.append('file', this.selectedFile);
 
-                    const response = await fetch('http://localhost:3001/api/credentials/upload', {
+                        const response = await fetch('https://nillionvault-backend.onrender.com/api/credentials/upload', {
                         method: 'POST',
                         body: formData
                     });
@@ -955,7 +955,7 @@
                 verifyResult.style.display = 'none';
 
                 try {
-                    const response = await fetch('http://localhost:3001/api/credentials/verify', {
+                    const response = await fetch('https://nillionvault-backend.onrender.com/api/credentials/verify', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
