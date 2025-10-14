@@ -1,6 +1,21 @@
 const express = require('express');
 const Joi = require('joi');
-const { computeJsonProofHash, computeBinaryProofHash } = require('../../tools/hash');
+// Hash computation functions
+const crypto = require('crypto');
+
+function computeJsonProofHash(jsonData) {
+  try {
+    const parsed = JSON.parse(jsonData);
+    const canonicalized = JSON.stringify(parsed, Object.keys(parsed).sort());
+    return crypto.createHash('sha256').update(canonicalized, 'utf8').digest('hex');
+  } catch (error) {
+    throw new Error('Invalid JSON data for hashing');
+  }
+}
+
+function computeBinaryProofHash(buffer) {
+  return crypto.createHash('sha256').update(buffer).digest('hex');
+}
 
 const { db } = require('../services/supabase');
 const { anchorService } = require('../services/anchor');
