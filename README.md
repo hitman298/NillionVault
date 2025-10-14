@@ -2,6 +2,7 @@
 
 A **production-ready** secure document storage platform powered by **Nillion Network**, **Supabase**, and advanced cryptographic verification.
 
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_Now-success.svg)](https://nillionvault-frontend.onrender.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![Nillion](https://img.shields.io/badge/Nillion-Testnet-blue.svg)](https://nillion.network/)
@@ -82,6 +83,15 @@ NillionVault/
 ├── 📄 README.md               # This file
 └── 📄 LICENSE                 # MIT License
 ```
+
+## 🌐 Live Demo
+
+**🚀 Try it now**: [https://nillionvault-frontend.onrender.com](https://nillionvault-frontend.onrender.com)
+
+- ✅ **Upload JSON documents** with drag & drop
+- ✅ **Generate cryptographic hashes** for verification
+- ✅ **Verify document authenticity** using proof hashes
+- ✅ **Store securely** on Nillion Network + Supabase
 
 ## 🚀 Quick Start
 
@@ -227,6 +237,12 @@ docker-compose -f deploy/docker-compose.yml up --build
 ```
 
 📖 **Detailed deployment guide**: [deploy/DEPLOYMENT.md](deploy/DEPLOYMENT.md)
+
+## 🌐 Live Application
+
+**🚀 Frontend**: [https://nillionvault-frontend.onrender.com](https://nillionvault-frontend.onrender.com) - **Try it now!**
+**🔧 Backend API**: [https://nillionvault-backend.onrender.com](https://nillionvault-backend.onrender.com)
+**💚 Health Check**: [https://nillionvault-backend.onrender.com/health](https://nillionvault-backend.onrender.com/health)
 
 ## 🔒 Security Features
 
