@@ -6,7 +6,22 @@ const Joi = require('joi');
 const { db } = require('../services/supabase');
 const { nillionService } = require('../services/nillion');
 const { queueService } = require('../services/queue');
-const { computeJsonProofHash, computeBinaryProofHash } = require('../../tools/hash');
+// Hash computation functions
+const crypto = require('crypto');
+
+function computeJsonProofHash(jsonData) {
+  try {
+    const parsed = JSON.parse(jsonData);
+    const canonicalized = JSON.stringify(parsed, Object.keys(parsed).sort());
+    return crypto.createHash('sha256').update(canonicalized, 'utf8').digest('hex');
+  } catch (error) {
+    throw new Error('Invalid JSON data for hashing');
+  }
+}
+
+function computeBinaryProofHash(buffer) {
+  return crypto.createHash('sha256').update(buffer).digest('hex');
+}
 const { ValidationError, NotFoundError, AppError, logger } = require('../middleware/errorHandler');
 
 const router = express.Router();
