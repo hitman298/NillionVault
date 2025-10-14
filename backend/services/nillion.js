@@ -253,11 +253,22 @@ class NillionService {
               $schema: 'http://json-schema.org/draft-07/schema#',
               type: 'object',
               properties: {
-                credential_id: { type: 'string' },
-                data: { type: 'string' },
-                stored_at: { type: 'string', format: 'date-time' }
+                credential_id: { type: 'string' }, // Plaintext - for queries
+                proof_hash: { type: 'string' }, // Plaintext - for verification
+                file_name: { type: 'string' }, // Plaintext - for display
+                file_type: { type: 'string' }, // Plaintext - for metadata
+                size_bytes: { type: 'number' }, // Plaintext - for metadata
+                stored_at: { type: 'string', format: 'date-time' }, // Plaintext - for sorting
+                // Encrypted field for actual document content
+                document_content: {
+                  type: "object",
+                  properties: {
+                    "%share": { type: "string" }
+                  },
+                  required: ["%share"]
+                }
               },
-              required: ['credential_id', 'data', 'stored_at']
+              required: ['credential_id', 'proof_hash', 'file_name', 'document_content', 'stored_at']
             }
           };
 
@@ -276,15 +287,20 @@ class NillionService {
           }
         }
 
-      // Store the credential data (encrypted)
-      // Convert data to base64 string for storage
+      // Store the credential data using hybrid approach (plaintext metadata + encrypted content)
+      // Convert data to base64 string for encrypted storage
       const dataString = Buffer.isBuffer(data) ? data.toString('base64') : String(data);
       
-      // Simplified credential record for NillionDB
+      // Hybrid credential record: plaintext metadata + encrypted content
       const credentialRecord = {
-        credential_id: credentialId,
-        data: dataString, // Store as plain string in NillionDB (will be encrypted by the network)
-        stored_at: new Date().toISOString()
+        credential_id: credentialId, // Plaintext - for queries
+        proof_hash: metadata.proofHash || 'unknown', // Plaintext - for verification
+        file_name: metadata.fileName || 'document.json', // Plaintext - for display
+        file_type: metadata.fileType || 'application/json', // Plaintext - for metadata
+        size_bytes: metadata.sizeBytes || dataString.length, // Plaintext - for metadata
+        stored_at: new Date().toISOString(), // Plaintext - for sorting
+        // Encrypted field for actual document content
+        document_content: { "%allot": dataString } // Encrypted - actual document data
       };
       
       logger.info('Storing credential data', { 

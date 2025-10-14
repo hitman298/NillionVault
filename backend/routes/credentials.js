@@ -148,6 +148,7 @@ router.post('/upload', upload.single('file'), async (req, res, next) => {
         fileName,
         fileType,
         proofHash,
+        sizeBytes,
         userId
       });
 
