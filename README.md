@@ -91,13 +91,12 @@ NillionVault/
 - ✅ **Upload JSON documents** with drag & drop
 - ✅ **Generate cryptographic hashes** for verification
 - ✅ **Verify document authenticity** using proof hashes
-- ✅ **Store securely** on Nillion Network + Supabase
+- ✅ **Store securely** on Nillion Network
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - **Node.js 18+** and npm
-- **Supabase account** (free tier available)
 - **Nillion testnet account** (for SecretVaults)
 
 ### 1. Clone & Install
@@ -123,19 +122,14 @@ cp backend/env.example backend/.env
 # See Configuration section below
 ```
 
-### 3. Database Setup
+### 3. Nillion Setup
 
-1. Create a [Supabase project](https://supabase.com)
-2. Run the SQL schema from `database/schema.sql` in your Supabase SQL editor
-3. Copy your database credentials to `backend/.env`
+1. Get your Nillion testnet private key from [Nillion UI](https://nillion.network)
+2. Fund your testnet account with NIL tokens from the faucet
+3. Subscribe to [nilDB service](https://nilpay.nillion.network) (28 NIL/month)
+4. Add your private key to `backend/.env`
 
-### 4. Nillion Setup (Optional)
-
-1. Create a [Nillion testnet wallet](https://testnet.nillion.network)
-2. Subscribe to [nilDB service](https://nilpay.nillion.network) (28 NIL/month)
-3. Add your private key to `backend/.env`
-
-### 5. Start Development
+### 4. Start Development
 
 ```bash
 # Terminal 1 - Backend (Port 3001)
@@ -161,16 +155,6 @@ BUILDER_PRIVATE_KEY=your_private_key_here
 NILCHAIN_URL=http://rpc.testnet.nilchain-rpc-proxy.nilogy.xyz
 NILAUTH_URL=https://nilauth.sandbox.app-cluster.sandbox.nilogy.xyz
 NILDB_NODES=https://nildb-stg-n1.nillion.network,https://nildb-stg-n2.nillion.network,https://nildb-stg-n3.nillion.network
-
-# Database (Supabase)
-DATABASE_URL=postgresql://user:pass@host:port/db
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-SUPABASE_ANON_KEY=your_anon_key
-
-# Queue (Upstash Redis - Optional)
-UPSTASH_REDIS_REST_URL=https://your-redis-url.upstash.io
-UPSTASH_REDIS_REST_TOKEN=your_redis_token
 
 # Server Configuration
 PORT=3001
