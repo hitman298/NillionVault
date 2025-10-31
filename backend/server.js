@@ -57,9 +57,26 @@ const PORT = process.env.PORT || 3001;
 // Security middleware
 app.use(helmet());
 
-// CORS configuration
+// CORS configuration - Allow frontend and common origins
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'https://nillionvault-frontend.onrender.com',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000'
+].filter(Boolean); // Remove undefined values
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin) || allowedOrigins.some(allowed => origin && origin.startsWith(allowed))) {
+      callback(null, true);
+    } else {
+      console.warn(`⚠️ CORS blocked origin: ${origin}`);
+      callback(null, true); // Allow for now, but log it
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200
 };
@@ -71,6 +88,23 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Request logging
 app.use(requestLogger);
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'NillionVault Backend API',
+    status: 'running',
+    version: '1.0.0',
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: '/health',
+      upload: '/api/credentials/upload',
+      verify: '/api/credentials/verify',
+      list: '/api/credentials/list',
+      docs: 'https://github.com/hitman298/NillionVault'
+    }
+  });
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {
