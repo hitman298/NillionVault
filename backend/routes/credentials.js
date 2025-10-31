@@ -3,7 +3,6 @@ const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 const Joi = require('joi');
 
-const { db } = require('../services/supabase');
 const { nillionService } = require('../services/nillion');
 const { queueService } = require('../services/queue');
 // Hash computation functions
@@ -92,7 +91,21 @@ router.post('/upload', upload.single('file'), async (req, res, next) => {
       proofHash = computeBinaryProofHash(file.buffer);
       fileData = file.buffer;
       fileName = file.originalname;
-      fileType = file.mimetype;
+      
+      // Detect file type - prefer text/plain for text files
+      const detectedMime = file.mimetype;
+      if (detectedMime === 'application/json' || fileName.endsWith('.json')) {
+        fileType = 'application/json';
+      } else if (detectedMime === 'text/plain' || 
+                 fileName.endsWith('.txt') || 
+                 fileName.endsWith('.text') ||
+                 detectedMime.startsWith('text/')) {
+        fileType = 'text/plain'; // Use text/plain for text files
+      } else {
+        // For other file types, use detected MIME type or default to text/plain
+        fileType = detectedMime || 'text/plain';
+      }
+      
       sizeBytes = file.size;
     }
 
@@ -101,46 +114,36 @@ router.post('/upload', upload.single('file'), async (req, res, next) => {
       throw new ValidationError('Client proof hash does not match server computation');
     }
 
-    // Check if credential already exists
-    const existingCredential = await db.getCredentialByProofHash(proofHash);
-    if (existingCredential) {
-      return res.json({
-        success: true,
-        credentialId: existingCredential.id,
-        proofHash: existingCredential.proof_hash,
-        status: existingCredential.status,
-        message: 'Credential already exists'
-      });
-    }
-
-    // Get or create user
-    let userId;
-    if (email) {
-      let user = await db.getUserByEmail(email);
-      if (!user) {
-        user = await db.createUser({ email });
+    // Check if credential already exists in NillionDB
+    let existingCredential = null;
+    try {
+      existingCredential = await nillionService.getCredentialByProofHash(proofHash);
+      if (existingCredential) {
+        return res.json({
+          success: true,
+          credentialId: existingCredential.id || existingCredential.credential_id,
+          proofHash: existingCredential.proof_hash,
+          status: existingCredential.status || 'vaulted',
+          message: 'Credential already exists'
+        });
       }
-      userId = user.id;
-    } else {
-      // Create anonymous user
-      userId = uuidv4();
-      await db.createUser({ id: userId, email: null });
+    } catch (nillionError) {
+      logger.warn('Could not check for existing credential in NillionDB', {
+        error: nillionError.message,
+        proofHash
+      });
+      // Continue with upload - will create new credential
     }
 
-    // Create credential record
-    const credentialData = {
+    // Generate user ID
+    const userId = uuidv4();
+    
+    // Create credential object
+    const credential = {
       id: uuidv4(),
-      user_id: userId,
-      title: finalTitle,
-      description,
       proof_hash: proofHash,
-      file_name: fileName,
-      file_type: fileType,
-      size_bytes: sizeBytes,
       status: 'uploaded'
     };
-
-    const credential = await db.createCredential(credentialData);
 
     // Store file in Nillion SecretVault
     try {
@@ -152,43 +155,36 @@ router.post('/upload', upload.single('file'), async (req, res, next) => {
         userId
       });
 
-      // Update credential with vault ID
-      await db.updateCredential(credential.id, {
-        nillion_vault_id: vaultId,
-        status: 'vaulted'
-      });
 
-      // Enqueue anchoring job (skip if Redis unavailable)
-      try {
-        await queueService.enqueueAnchorJob({
+      // Anchor to nilChain (async, non-blocking)
+      const { anchorService } = require('../services/anchor');
+      let anchorInfo = null;
+      
+      if (anchorService) {
+        anchorService.anchorCredential({
           credentialId: credential.id,
           proofHash,
           userId
+        }).then((anchorResult) => {
+          logger.info('Credential anchored', {
+            credentialId: credential.id,
+            txHash: anchorResult.txHash,
+            status: anchorResult.status,
+            anchorType: anchorResult.anchorType
+          });
+        }).catch((anchorError) => {
+          logger.warn('Failed to anchor credential', {
+            credentialId: credential.id,
+            error: anchorError.message
+          });
+          // Continue - credential is still stored in NillionDB
         });
-        logger.info('Anchoring job enqueued', { credentialId: credential.id });
-      } catch (queueError) {
-        logger.warn('Failed to enqueue anchoring job, continuing without queue', { 
-          credentialId: credential.id,
-          error: queueError.message 
+      } else {
+        logger.info('Anchor service not available, skipping anchoring', {
+          credentialId: credential.id
         });
-        // Continue without queue - anchoring can be done manually later
       }
 
-      // Create audit log
-      await db.createAuditLog({
-        entity_type: 'credential',
-        entity_id: credential.id,
-        action: 'create',
-        actor: userId,
-        ip_address: req.ip,
-        user_agent: req.get('User-Agent'),
-        metadata: {
-          fileName,
-          fileType,
-          sizeBytes,
-          vaultId
-        }
-      });
 
       res.json({
         success: true,
@@ -196,20 +192,54 @@ router.post('/upload', upload.single('file'), async (req, res, next) => {
         proofHash,
         vaultId,
         status: 'vaulted',
-        message: 'Credential uploaded and queued for anchoring'
+        message: 'Credential uploaded and stored in NillionDB',
+        anchorInfo: anchorInfo || {
+          status: 'processing',
+          message: 'Anchoring in progress...'
+        }
       });
 
     } catch (vaultError) {
-      // Update credential status to failed
-      await db.updateCredential(credential.id, { status: 'failed' });
-      
       logger.error('Failed to store in Nillion vault', { 
         credentialId: credential.id, 
-        error: vaultError.message 
+        error: vaultError.message,
+        stack: vaultError.stack
       });
       
-      throw new AppError('Failed to store credential in vault', 500);
+      // Provide a more helpful error message
+      const errorMessage = vaultError.message || 'Unknown error';
+      throw new AppError(`Failed to store credential in vault: ${errorMessage}`, 500);
     }
+
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/credentials/list
+ * Get all stored credentials (Nillion-only mode)
+ * NOTE: This must come BEFORE /:id route to avoid route conflict
+ */
+router.get('/list', async (req, res, next) => {
+  try {
+    const { limit = 50, offset = 0 } = req.query;
+    
+    const result = await nillionService.getAllCredentials(
+      parseInt(limit),
+      parseInt(offset)
+    );
+    
+    res.json({
+      success: true,
+      credentials: result.credentials,
+      pagination: {
+        limit: result.limit,
+        offset: result.offset,
+        total: result.total,
+        hasMore: result.hasMore
+      }
+    });
 
   } catch (error) {
     next(error);
@@ -222,21 +252,9 @@ router.post('/upload', upload.single('file'), async (req, res, next) => {
  */
 router.get('/:id', async (req, res, next) => {
   try {
-    const { id } = req.params;
-    
-    const credential = await db.getCredentialById(id);
-    if (!credential) {
-      throw new NotFoundError('Credential');
-    }
-
-    // Remove sensitive data
-    const { nillion_vault_id, ...safeCredential } = credential;
-    
-    res.json({
-      success: true,
-      credential: safeCredential
-    });
-
+    // Credential lookup by ID not available in Nillion-only mode
+    // Use verification endpoint with proof_hash instead
+    throw new NotFoundError('Credential lookup by ID not available. Use /api/credentials/verify with proof_hash instead.');
   } catch (error) {
     next(error);
   }
@@ -246,26 +264,46 @@ router.get('/:id', async (req, res, next) => {
  * GET /api/credentials/user/:userId
  * Get user's credentials
  */
-router.get('/user/:userId', async (req, res, next) => {
+
+/**
+ * DELETE /api/credentials/:recordId
+ * Delete a credential by record ID (_id)
+ */
+router.delete('/:recordId', async (req, res, next) => {
   try {
-    const { userId } = req.params;
-    const { limit = 50, offset = 0 } = req.query;
+    const { recordId } = req.params;
     
-    const credentials = await db.getUserCredentials(userId, parseInt(limit), parseInt(offset));
-    
-    // Remove sensitive data
-    const safeCredentials = credentials.map(({ nillion_vault_id, ...cred }) => cred);
+    if (!recordId) {
+      throw new ValidationError('Record ID is required');
+    }
+
+    const result = await nillionService.deleteCredential(recordId);
     
     res.json({
       success: true,
-      credentials: safeCredentials,
-      pagination: {
-        limit: parseInt(limit),
-        offset: parseInt(offset),
-        total: credentials.length
-      }
+      message: result.message,
+      recordId: result.recordId
     });
 
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/user/:userId', async (req, res, next) => {
+  try {
+    // User credentials listing not available in Nillion-only mode
+    // Use /api/credentials/list instead
+    res.json({
+      success: true,
+      credentials: [],
+      pagination: {
+        limit: 0,
+        offset: 0,
+        total: 0
+      },
+      message: 'User credentials listing not available. Use /api/credentials/list instead'
+    });
   } catch (error) {
     next(error);
   }
@@ -284,7 +322,18 @@ router.post('/verify', async (req, res, next) => {
 
     const { proofHash } = value;
     
-    const credential = await db.getCredentialByProofHash(proofHash);
+    // Query NillionDB for credential by proof_hash
+    let credential = null;
+    try {
+      credential = await nillionService.getCredentialByProofHash(proofHash);
+    } catch (nillionError) {
+      logger.error('Failed to query NillionDB for verification', {
+        proofHash,
+        error: nillionError.message
+      });
+    }
+    
+    
     if (!credential) {
       return res.json({
         success: false,
@@ -293,17 +342,40 @@ router.post('/verify', async (req, res, next) => {
       });
     }
 
+    // Check for anchor information
+    let anchorInfo = null;
+    const { anchorService } = require('../services/anchor');
+    if (anchorService && anchorService.getAnchorByProofHash) {
+      anchorInfo = anchorService.getAnchorByProofHash(proofHash);
+    }
+
     res.json({
       success: true,
       credential: {
-        id: credential.id,
-        title: credential.title,
+        id: credential.id || credential.credential_id,
         proof_hash: credential.proof_hash,
-        status: credential.status,
-        created_at: credential.created_at,
-        anchors: credential.anchors
+        file_name: credential.file_name,
+        file_type: credential.file_type,
+        size_bytes: credential.size_bytes,
+        stored_at: credential.stored_at,
+        created_at: credential.stored_at || credential.created_at, // Map stored_at to created_at for frontend compatibility
+        status: credential.status || 'vaulted',
+        anchors: credential.anchors || [],
+        // Include decrypted content if available
+        content: credential.document_content || null,
+        // Include anchor information
+        anchorStatus: anchorInfo ? anchorInfo.status : 'not_anchored',
+        anchorType: anchorInfo ? anchorInfo.anchor_type : null,
+        anchorTxHash: anchorInfo ? anchorInfo.tx_hash : null,
+        anchorCreatedAt: anchorInfo ? anchorInfo.created_at : null
       },
-      message: 'Credential verified'
+      anchorInfo: anchorInfo ? {
+        status: anchorInfo.status,
+        anchorType: anchorInfo.anchor_type,
+        txHash: anchorInfo.tx_hash,
+        createdAt: anchorInfo.created_at
+      } : null,
+      message: 'Credential verified from NillionDB'
     });
 
   } catch (error) {
@@ -317,18 +389,11 @@ router.post('/verify', async (req, res, next) => {
  */
 router.get('/:id/audit', async (req, res, next) => {
   try {
-    const { id } = req.params;
-    
-    const credential = await db.getCredentialById(id);
-    if (!credential) {
-      throw new NotFoundError('Credential');
-    }
-
-    const auditLogs = await db.getAuditLogs('credential', id);
-    
+    // Audit logs not available in Nillion-only mode
     res.json({
       success: true,
-      auditLogs
+      auditLogs: [],
+      message: 'Audit logs not available in Nillion-only mode'
     });
 
   } catch (error) {

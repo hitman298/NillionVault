@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "type": "string",
+        "description": "Unique record identifier"
+      },
+      "credential_id": {
+        "type": "string",
+        "description": "Credential ID for queries"
+      },
+      "proof_hash": {
+        "type": "string",
+        "description": "SHA256 hash for verification"
+      },
+      "file_name": {
+        "type": "string",
+        "description": "Original file name"
+      },
+      "file_type": {
+        "type": "string",
+        "description": "MIME type of the file"
+      },
+      "size_bytes": {
+        "type": "number",
+        "description": "File size in bytes"
+      },
+      "stored_at": {
+        "type": "string",
+        "format": "date-time",
+        "description": "ISO timestamp when stored"
+      },
+      "document_content": {
+        "type": "object",
+        "description": "Encrypted document content",
+        "properties": {
+          "%allot": {
+            "type": "string",
+            "description": "Encrypted document data (base64)"
+          }
+        },
+        "required": ["%allot"]
+      }
+    },
+    "required": [
+      "_id",
+      "credential_id",
+      "proof_hash",
+      "file_name",
+      "document_content",
+      "stored_at"
+    ]
+  }
+}

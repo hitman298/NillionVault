@@ -17,8 +17,8 @@ function computeBinaryProofHash(buffer) {
   return crypto.createHash('sha256').update(buffer).digest('hex');
 }
 
-const { db } = require('../services/supabase');
 const { anchorService } = require('../services/anchor');
+const { nillionService } = require('../services/nillion');
 const { ValidationError, NotFoundError } = require('../middleware/errorHandler');
 
 const router = express.Router();
@@ -115,8 +115,8 @@ router.post('/verify-proof', async (req, res, next) => {
 
     const { proofHash } = value;
 
-    // Get credential by proof hash
-    const credential = await db.getCredentialByProofHash(proofHash);
+    // Get credential by proof hash from NillionDB
+    const credential = await nillionService.getCredentialByProofHash(proofHash);
     if (!credential) {
       return res.json({
         success: false,
@@ -197,56 +197,8 @@ router.post('/verify-proof', async (req, res, next) => {
  */
 router.get('/credential/:credentialId', async (req, res, next) => {
   try {
-    const { credentialId } = req.params;
-
-    const credential = await db.getCredentialById(credentialId);
-    if (!credential) {
-      throw new NotFoundError('Credential');
-    }
-
-    // Get all anchors for this credential
-    const anchors = credential.anchors || [];
-    
-    // Get blockchain verification for each anchor
-    const anchorVerifications = await Promise.all(
-      anchors.map(async (anchor) => {
-        let blockchainData = null;
-        try {
-          blockchainData = await anchorService.getTransactionReceipt(anchor.tx_hash);
-        } catch (error) {
-          blockchainData = { error: error.message };
-        }
-
-        return {
-          ...anchor,
-          explorer_url: await anchorService.getExplorerUrl(anchor.tx_hash),
-          blockchain_verification: blockchainData
-        };
-      })
-    );
-
-    res.json({
-      success: true,
-      credential: {
-        id: credential.id,
-        title: credential.title,
-        description: credential.description,
-        proof_hash: credential.proof_hash,
-        status: credential.status,
-        created_at: credential.created_at,
-        file_name: credential.file_name,
-        file_type: credential.file_type,
-        size_bytes: credential.size_bytes
-      },
-      anchors: anchorVerifications,
-      verification_summary: {
-        total_anchors: anchors.length,
-        confirmed_anchors: anchors.filter(a => a.status === 'confirmed').length,
-        failed_anchors: anchors.filter(a => a.status === 'failed').length,
-        pending_anchors: anchors.filter(a => a.status === 'pending').length
-      }
-    });
-
+    // Credential lookup by ID not available in Nillion-only mode
+    throw new NotFoundError('Credential lookup by ID not available in Nillion-only mode. Use /api/verification/verify-proof with proof_hash instead.');
   } catch (error) {
     next(error);
   }
@@ -258,48 +210,8 @@ router.get('/credential/:credentialId', async (req, res, next) => {
  */
 router.get('/export/:credentialId', async (req, res, next) => {
   try {
-    const { credentialId } = req.params;
-
-    const credential = await db.getCredentialById(credentialId);
-    if (!credential) {
-      throw new NotFoundError('Credential');
-    }
-
-    // Get audit logs
-    const auditLogs = await db.getAuditLogs('credential', credentialId);
-
-    // Prepare export package
-    const exportPackage = {
-      credential: {
-        id: credential.id,
-        title: credential.title,
-        description: credential.description,
-        proof_hash: credential.proof_hash,
-        status: credential.status,
-        created_at: credential.created_at,
-        file_name: credential.file_name,
-        file_type: credential.file_type,
-        size_bytes: credential.size_bytes
-      },
-      anchors: credential.anchors || [],
-      audit_logs: auditLogs,
-      verification_instructions: [
-        '1. Use the hash.js script to compute proof hash from your original file',
-        '2. Compare with the proof_hash in this export',
-        '3. Check each anchor transaction on the testnet explorer',
-        '4. Verify the transaction memo/data field contains the proof hash',
-        '5. Confirm the transaction is in a confirmed block'
-      ],
-      explorer_base_url: 'https://testnet.nillion.explorers.guru',
-      exported_at: new Date().toISOString(),
-      version: '1.0.0'
-    };
-
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Content-Disposition', `attachment; filename="nillionvault-verification-${credentialId}.json"`);
-    
-    res.json(exportPackage);
-
+    // Export functionality disabled - use verification endpoints instead
+    throw new NotFoundError('Export functionality not available. Use /api/verification/verify-proof with proof_hash instead.');
   } catch (error) {
     next(error);
   }

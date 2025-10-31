@@ -7,10 +7,8 @@ const path = require('path');
 // Load environment variables
 dotenv.config();
 
-// Import routes
-const authRoutes = require('./routes/auth');
+// Import routes (Nillion-only mode - auth/anchors removed)
 const credentialRoutes = require('./routes/credentials');
-const anchorRoutes = require('./routes/anchors');
 const verificationRoutes = require('./routes/verification');
 
 // Import middleware
@@ -50,10 +48,8 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API routes
-app.use('/api/auth', authRoutes);
+// API routes (Nillion-only mode)
 app.use('/api/credentials', credentialRoutes);
-app.use('/api/anchors', anchorRoutes);
 app.use('/api/verification', verificationRoutes);
 
 // Serve static files (for hash utility)

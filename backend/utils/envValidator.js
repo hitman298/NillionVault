@@ -4,16 +4,12 @@
  */
 
 function validateEnv() {
+  // Only require Nillion-related environment variables (Supabase/Redis removed)
   const required = [
-    'DATABASE_URL',
-    'SUPABASE_URL', 
-    'SUPABASE_SERVICE_ROLE_KEY',
     'BUILDER_PRIVATE_KEY',
     'NILCHAIN_URL',
     'NILAUTH_URL',
-    'NILDB_NODES',
-    'UPSTASH_REDIS_REST_URL',
-    'UPSTASH_REDIS_REST_TOKEN'
+    'NILDB_NODES'
   ];
 
   const missing = required.filter(key => !process.env[key]);
@@ -25,17 +21,16 @@ function validateEnv() {
     console.error('See backend/env.example for reference.');
     console.error('\n💡 For NillionDB integration, you need:');
     console.error('   - BUILDER_PRIVATE_KEY (from Nillion UI)');
+    console.error('   - NILCHAIN_URL (testnet URL)');
     console.error('   - NILAUTH_URL (testnet URL)');
     console.error('   - NILDB_NODES (comma-separated testnet nodes)');
     process.exit(1);
   }
 
-  // Validate URLs
+  // Validate URLs (Nillion only - no Supabase/Redis)
   try {
-    new URL(process.env.SUPABASE_URL);
     new URL(process.env.NILCHAIN_URL);
     new URL(process.env.NILAUTH_URL);
-    new URL(process.env.UPSTASH_REDIS_REST_URL);
     
     // Validate NILDB_NODES format
     const nodes = process.env.NILDB_NODES.split(',');

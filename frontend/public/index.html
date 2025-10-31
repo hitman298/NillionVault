@@ -515,9 +515,9 @@
                 <a href="#" class="logo">NillionVault</a>
                 <nav>
                     <ul class="nav-links">
-                        <li><a href="#upload">Upload</a></li>
+                        <li><a href="#store">Store Message</a></li>
                         <li><a href="#verify">Verify</a></li>
-                        <li><a href="#history">History</a></li>
+                        <li><a href="#list">My Messages</a></li>
                     </ul>
                 </nav>
             </div>
@@ -529,63 +529,63 @@
         <div class="container">
             <!-- Hero Section -->
             <section class="hero">
-                <h1>Secure Document Storage</h1>
-                <p>Store your documents securely on the Nillion Network with military-grade encryption and distributed storage technology.</p>
+                <h1>NillionVault - Secure Message Storage</h1>
+                <p>Store your messages securely on the Nillion Network with military-grade encryption and distributed storage technology.</p>
             </section>
 
-            <!-- Stats -->
-            <section class="stats">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalUploads">0</div>
-                    <div class="stat-label">Documents Secured</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="totalDataSize">0 MB</div>
-                    <div class="stat-label">Data Protected</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="successfulUploads">0</div>
-                    <div class="stat-label">Success Rate</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">100%</div>
-                    <div class="stat-label">Uptime</div>
-                </div>
-            </section>
-
-            <!-- Upload Section -->
-            <section class="section" id="upload">
-                <h2 class="section-title">Upload Document</h2>
-                <p class="section-description">Securely store your JSON documents on the Nillion Network with advanced encryption and distributed storage.</p>
+            <!-- Store Message Section -->
+            <section class="section" id="store">
+                <h2 class="section-title">Store Message</h2>
+                <p class="section-description">Securely store your text messages on the Nillion Network with advanced encryption and distributed storage.</p>
                 
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-text">Drop your JSON file here or click to select</div>
-                    <div class="upload-subtext">Maximum file size: 10MB • Supported format: JSON</div>
-                    <input type="file" class="file-input" id="fileInput" accept=".json,application/json">
+                <!-- Anchoring Explanation -->
+                <div style="margin-bottom: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; color: white;">
+                    <h3 style="font-size: 1rem; margin-bottom: 0.75rem; font-weight: 600;">🔗 What is Anchoring?</h3>
+                    <div style="font-size: 0.875rem; line-height: 1.6; opacity: 0.95;">
+                        <p style="margin-bottom: 0.5rem;"><strong>Anchoring</strong> creates an immutable cryptographic proof that your message existed at a specific time.</p>
+                        <ul style="margin: 0.5rem 0; padding-left: 1.25rem;">
+                            <li>✅ Your message is hashed (SHA-256) to create a unique fingerprint</li>
+                            <li>✅ This hash is stored in NillionDB and optionally on nilChain blockchain</li>
+                            <li>✅ Anyone can verify the message hasn't been altered using the proof hash</li>
+                            <li>✅ The proof hash acts as your verification key</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem; font-size: 0.8rem; opacity: 0.9;"><em>💡 Tip: Save your verification hash - it's the only way to retrieve your encrypted message!</em></p>
+                </div>
+                </div>
+                
+                <!-- Text Message Input -->
+                <div class="form-group">
+                    <label class="form-label" for="textMessage">Enter your message:</label>
+                    <textarea class="form-input" id="textMessage" rows="6" placeholder="Enter your message or text here..."></textarea>
+                    <div class="form-help">Type any text message or sentence to store securely on Nillion Network</div>
+                    <button class="btn btn-primary" id="uploadTextBtn" style="margin-top: 1rem;">Store Message</button>
                 </div>
 
-                <div class="file-info" id="fileInfo">
-                    <div class="file-details">
-                        <div class="file-name" id="fileName"></div>
-                        <div class="file-size" id="fileSize"></div>
-                    </div>
-                    <div class="progress-bar" id="progressBar">
+                <div class="progress-bar" id="progressBar" style="display: none;">
                         <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                </div>
-
-                <div class="buttons">
-                    <button class="btn btn-primary" id="uploadBtn">Upload Document</button>
-                    <button class="btn btn-secondary" id="clearBtn" style="display: none;">Clear Selection</button>
                 </div>
 
                 <div class="result" id="result"></div>
+                
+                <!-- Bulk Upload Section -->
+                <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #e9ecef;">
+                    <h3 style="margin-bottom: 1rem; font-size: 1.25rem;">Bulk Upload</h3>
+                    <p style="color: #6c757d; margin-bottom: 1rem;">Upload multiple messages at once (one per line)</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="bulkMessages">Messages (one per line)</label>
+                        <textarea class="form-input" id="bulkMessages" rows="8" placeholder="Message 1&#10;Message 2&#10;Message 3&#10;..."></textarea>
+                        <div class="form-help">Enter multiple messages, one per line. Each will be stored separately. Maximum 50 messages.</div>
+                    </div>
+                    <button class="btn btn-secondary" id="uploadBulkBtn">Upload All Messages</button>
+                    <div id="bulkResult" style="margin-top: 1rem;"></div>
+                </div>
             </section>
 
             <!-- Verification Section -->
             <section class="section" id="verify">
-                <h2 class="section-title">Document Verification</h2>
-                <p class="section-description">Verify document authenticity using your private verification hash. This is a secure, private process.</p>
+                <h2 class="section-title">Message Verification</h2>
+                <p class="section-description">Verify message authenticity using your private verification hash. This is a secure, private process.</p>
                 
                 <div class="form-group">
                     <label class="form-label" for="proofHash">Verification Hash</label>
@@ -596,23 +596,68 @@
                 <div class="result" id="verifyResult"></div>
             </section>
 
-            <!-- Recent Uploads -->
-            <section class="section" id="history">
-                <h2 class="section-title">Recent Uploads</h2>
-                <ul class="upload-list" id="uploadList">
-                    <li class="upload-item">
-                        <div class="upload-item-header">
-                            <div class="upload-item-name">No uploads yet</div>
+            <!-- List Messages Section -->
+            <section class="section" id="list">
+                <h2 class="section-title">My Messages</h2>
+                <p class="section-description">View all your stored messages from NillionDB.</p>
+                
+                <!-- Statistics Section -->
+                <div id="messageStats" style="display: none; margin-bottom: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; color: white;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                        <div>
+                            <div style="font-size: 0.875rem; opacity: 0.9;">Total Messages</div>
+                            <div style="font-size: 1.5rem; font-weight: 600;" id="statTotal">0</div>
                         </div>
-                        <div class="upload-item-details">
-                            <div class="detail-item">
-                                <div class="detail-label">Status</div>
-                                <div class="detail-value">Upload your first document to see it here</div>
+                        <div>
+                            <div style="font-size: 0.875rem; opacity: 0.9;">Total Size</div>
+                            <div style="font-size: 1.5rem; font-weight: 600;" id="statSize">0 Bytes</div>
                             </div>
+                        <div>
+                            <div style="font-size: 0.875rem; opacity: 0.9;">Filtered</div>
+                            <div style="font-size: 1.5rem; font-weight: 600;" id="statFiltered">0</div>
                         </div>
-                    </li>
-                </ul>
+                    </div>
+                </div>
+
+                <!-- Search and Filter Section -->
+                <div style="margin-bottom: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="form-label" for="searchInput">Search Messages</label>
+                        <input type="text" class="form-input" id="searchInput" placeholder="Search by filename or content...">
+                    </div>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: end;">
+                        <div class="form-group" style="flex: 1; min-width: 150px;">
+                            <label class="form-label" for="dateFrom">From Date</label>
+                            <input type="date" class="form-input" id="dateFrom">
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 150px;">
+                            <label class="form-label" for="dateTo">To Date</label>
+                            <input type="date" class="form-input" id="dateTo">
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 120px;">
+                            <label class="form-label" for="sortBy">Sort By</label>
+                            <select class="form-input" id="sortBy">
+                                <option value="newest">Newest First</option>
+                                <option value="oldest">Oldest First</option>
+                                <option value="name">Name (A-Z)</option>
+                                <option value="size">Size (Largest)</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" id="clearFiltersBtn" style="height: fit-content;">Clear Filters</button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="form-group" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button class="btn btn-primary" id="listBtn">Load Messages</button>
+                    <button class="btn btn-secondary" id="refreshListBtn" style="display: none;">Refresh</button>
+                    <button class="btn btn-secondary" id="exportAllBtn" style="display: none;">Export All</button>
+                    <button class="btn btn-secondary" id="exportSelectedBtn" style="display: none;">Export Selected</button>
+                </div>
+                
+                <div id="listResult" style="margin-top: 1.5rem;"></div>
             </section>
+
         </div>
     </main>
 
@@ -626,16 +671,13 @@
     <script>
         class NillionVaultApp {
             constructor() {
-                this.uploads = JSON.parse(localStorage.getItem('nillionvault_uploads') || '[]');
-                this.selectedFile = null;
+                this.allCredentials = []; // Store all loaded credentials
+                this.filteredCredentials = []; // Store filtered results
                 this.init();
             }
 
             init() {
                 this.setupEventListeners();
-                this.loadExistingUploads();
-                this.updateStats();
-                this.updateUploadList();
                 // Hide verification result initially
                 const verifyResult = document.getElementById('verifyResult');
                 if (verifyResult) {
@@ -643,118 +685,63 @@
                 }
             }
 
-            loadExistingUploads() {
-                const cleanedUploads = [];
-                const seenHashes = new Set();
-                const seenIds = new Set();
-
-                for (const upload of this.uploads) {
-                    if (!upload.hash || upload.hash === 'no-hash' || !upload.id || upload.id === 'unknown') {
-                        continue;
-                    }
-
-                    if (seenHashes.has(upload.hash) || seenIds.has(upload.id)) {
-                        continue;
-                    }
-
-                    seenHashes.add(upload.hash);
-                    seenIds.add(upload.id);
-                    cleanedUploads.push(upload);
-                }
-
-                if (cleanedUploads.length !== this.uploads.length) {
-                    this.uploads = cleanedUploads.slice(0, 5);
-                    localStorage.setItem('nillionvault_uploads', JSON.stringify(this.uploads));
-                }
-            }
-
             setupEventListeners() {
-                const uploadArea = document.getElementById('uploadArea');
-                const fileInput = document.getElementById('fileInput');
-                const uploadBtn = document.getElementById('uploadBtn');
-                const clearBtn = document.getElementById('clearBtn');
+                const uploadTextBtn = document.getElementById('uploadTextBtn');
                 const verifyBtn = document.getElementById('verifyBtn');
+                const listBtn = document.getElementById('listBtn');
+                const refreshListBtn = document.getElementById('refreshListBtn');
+                const uploadBulkBtn = document.getElementById('uploadBulkBtn');
+                const searchInput = document.getElementById('searchInput');
+                const dateFrom = document.getElementById('dateFrom');
+                const dateTo = document.getElementById('dateTo');
+                const sortBy = document.getElementById('sortBy');
+                const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+                const exportAllBtn = document.getElementById('exportAllBtn');
+                const exportSelectedBtn = document.getElementById('exportSelectedBtn');
 
-                uploadArea.addEventListener('click', () => fileInput.click());
-                uploadArea.addEventListener('dragover', this.handleDragOver.bind(this));
-                uploadArea.addEventListener('dragleave', this.handleDragLeave.bind(this));
-                uploadArea.addEventListener('drop', this.handleDrop.bind(this));
-
-                fileInput.addEventListener('change', (e) => this.handleFileSelect(e.target.files[0]));
-                uploadBtn.addEventListener('click', () => this.uploadFile());
-                clearBtn.addEventListener('click', () => this.clearSelection());
+                uploadTextBtn.addEventListener('click', () => this.uploadTextMessage());
                 verifyBtn.addEventListener('click', () => this.verifyDocument());
-            }
-
-            handleDragOver(e) {
-                e.preventDefault();
-                document.getElementById('uploadArea').classList.add('dragover');
-            }
-
-            handleDragLeave(e) {
-                e.preventDefault();
-                document.getElementById('uploadArea').classList.remove('dragover');
-            }
-
-            handleDrop(e) {
-                e.preventDefault();
-                document.getElementById('uploadArea').classList.remove('dragover');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    this.handleFileSelect(files[0]);
+                listBtn.addEventListener('click', () => this.loadAllMessages());
+                refreshListBtn.addEventListener('click', () => this.loadAllMessages());
+                uploadBulkBtn.addEventListener('click', () => this.uploadBulkMessages());
+                
+                // Search and filter listeners
+                if (searchInput) {
+                    searchInput.addEventListener('input', () => this.applyFilters());
+                }
+                if (dateFrom) {
+                    dateFrom.addEventListener('change', () => this.applyFilters());
+                }
+                if (dateTo) {
+                    dateTo.addEventListener('change', () => this.applyFilters());
+                }
+                if (sortBy) {
+                    sortBy.addEventListener('change', () => this.applyFilters());
+                }
+                if (clearFiltersBtn) {
+                    clearFiltersBtn.addEventListener('click', () => this.clearFilters());
+                }
+                if (exportAllBtn) {
+                    exportAllBtn.addEventListener('click', () => this.exportAll());
+                }
+                if (exportSelectedBtn) {
+                    exportSelectedBtn.addEventListener('click', () => this.exportSelected());
                 }
             }
 
-            handleFileSelect(file) {
-                if (file && (file.type === 'application/json' || file.name.endsWith('.json'))) {
-                    this.selectedFile = file;
-                    this.updateFileInfo();
-                    this.hideResult();
-                } else {
-                    this.showResult('Please select a valid JSON file.', 'error');
-                }
-            }
-
-            updateFileInfo() {
-                const fileInfo = document.getElementById('fileInfo');
-                const fileName = document.getElementById('fileName');
-                const fileSize = document.getElementById('fileSize');
-                const uploadBtn = document.getElementById('uploadBtn');
-                const clearBtn = document.getElementById('clearBtn');
-
-                if (this.selectedFile) {
-                    fileName.textContent = this.selectedFile.name;
-                    fileSize.textContent = this.formatFileSize(this.selectedFile.size);
-                    fileInfo.classList.add('show');
-                    uploadBtn.disabled = false;
-                    clearBtn.style.display = 'inline-flex';
-                } else {
-                    fileInfo.classList.remove('show');
-                    uploadBtn.disabled = false; // Keep button enabled
-                    clearBtn.style.display = 'none';
-                }
-            }
-
-            clearSelection() {
-                this.selectedFile = null;
-                document.getElementById('fileInput').value = '';
-                this.updateFileInfo();
-                this.hideResult();
-            }
-
-            async uploadFile() {
-                if (!this.selectedFile) {
-                    // Trigger file selection if no file is selected
-                    document.getElementById('fileInput').click();
+            async uploadTextMessage() {
+                const textMessage = document.getElementById('textMessage').value.trim();
+                if (!textMessage) {
+                    this.showResult('Please enter some text to upload.', 'error');
                     return;
                 }
 
-                const uploadBtn = document.getElementById('uploadBtn');
+                const uploadTextBtn = document.getElementById('uploadTextBtn');
                 const progressBar = document.getElementById('progressBar');
                 const progressFill = document.getElementById('progressFill');
 
-                uploadBtn.disabled = true;
-                uploadBtn.innerHTML = '<div class="spinner"></div> Securing Document...';
+                uploadTextBtn.disabled = true;
+                uploadTextBtn.innerHTML = '<div class="spinner"></div> Storing...';
                 progressBar.style.display = 'block';
                 progressFill.style.width = '0%';
                 this.hideResult();
@@ -768,10 +755,14 @@
                 }, 200);
 
                 try {
+                    // Create a text file blob from the message
+                    const blob = new Blob([textMessage], { type: 'text/plain' });
+                    const file = new File([blob], 'message.txt', { type: 'text/plain' });
+                    
                     const formData = new FormData();
-                    formData.append('file', this.selectedFile);
+                    formData.append('file', file);
 
-                        const response = await fetch('https://nillionvault-backend.onrender.com/api/credentials/upload', {
+                    const response = await fetch('http://localhost:3001/api/credentials/upload', {
                         method: 'POST',
                         body: formData
                     });
@@ -784,20 +775,26 @@
                     if (response.ok) {
                         setTimeout(() => {
                             this.showUploadResult(data);
-                            this.addToUploads(data);
-                            this.clearSelection();
+                            document.getElementById('textMessage').value = '';
                             progressBar.style.display = 'none';
                             progressFill.style.width = '0%';
+                            
+                            // Check anchoring status after a delay
+                            if (data.proofHash) {
+                                setTimeout(() => {
+                                    this.checkAnchoringStatus(data.proofHash);
+                                }, 2000);
+                            }
                         }, 500);
                     } else {
-                        this.showResult(`Upload Failed: ${data.message || 'Unknown error'}`, 'error');
+                        this.showResult(`Store Failed: ${data.message || 'Unknown error'}`, 'error');
                     }
                 } catch (error) {
                     clearInterval(progressInterval);
                     this.showResult(`Error: ${error.message}`, 'error');
                 } finally {
-                    uploadBtn.disabled = false;
-                    uploadBtn.innerHTML = 'Upload Document';
+                uploadTextBtn.disabled = false;
+                    uploadTextBtn.innerHTML = 'Store Message';
                 }
             }
 
@@ -828,13 +825,56 @@
                         <span class="result-label">Storage Type:</span>
                         <span class="result-value">Nillion SecretVaults</span>
                     </div>
-                    <div class="result-detail">
+                    <div class="result-detail" id="anchorStatusDetail">
                         <span class="result-label">Blockchain Status:</span>
-                        <span class="result-value">Ready for Anchoring</span>
+                        <span class="result-value">Anchoring...</span>
                     </div>
                 `;
                 result.className = 'result success';
                 result.style.display = 'block';
+            }
+
+            async checkAnchoringStatus(proofHash) {
+                try {
+                    // Query the credential to see if it has anchor info
+                    const response = await fetch('http://localhost:3001/api/credentials/verify', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ proofHash })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success && data.credential) {
+                        // Update anchor status display if available
+                        const anchorStatusDetail = document.getElementById('anchorStatusDetail');
+                        if (anchorStatusDetail) {
+                            const anchorStatus = data.credential.anchorStatus || 'not_anchored';
+                            let statusText = 'Not Anchored';
+                            let statusColor = '#6c757d';
+                            
+                            if (anchorStatus === 'verified' || anchorStatus === 'confirmed') {
+                                statusText = '✓ Anchored & Verified';
+                                statusColor = '#28a745';
+                            } else if (anchorStatus === 'pending') {
+                                statusText = '⏳ Anchoring...';
+                                statusColor = '#ffc107';
+                            } else if (anchorStatus === 'failed') {
+                                statusText = '✗ Anchoring Failed';
+                                statusColor = '#dc3545';
+                            }
+                            
+                            anchorStatusDetail.innerHTML = `
+                                <span class="result-label">Anchoring Status:</span>
+                                <span class="result-value" style="color: ${statusColor};">${statusText}</span>
+                            `;
+                        }
+                    }
+                } catch (error) {
+                    // Silently fail - anchoring check is optional
+                }
             }
 
             showResult(message, type) {
@@ -848,96 +888,6 @@
                 document.getElementById('result').style.display = 'none';
             }
 
-            addToUploads(data) {
-                const newUpload = {
-                    id: data.credentialId || 'unknown',
-                    name: this.selectedFile ? this.selectedFile.name : 'Unknown file',
-                    size: this.selectedFile ? this.selectedFile.size : 0,
-                    hash: data.proofHash || 'no-hash',
-                    status: data.status || 'unknown',
-                    timestamp: new Date().toISOString()
-                };
-
-                const existingIndex = this.uploads.findIndex(upload => 
-                    upload.hash === newUpload.hash || upload.id === newUpload.id
-                );
-
-                if (existingIndex !== -1) {
-                    this.uploads[existingIndex] = newUpload;
-                } else {
-                    this.uploads.unshift(newUpload);
-                }
-
-                if (this.uploads.length > 5) {
-                    this.uploads = this.uploads.slice(0, 5);
-                }
-
-                localStorage.setItem('nillionvault_uploads', JSON.stringify(this.uploads));
-                this.updateUploadList();
-                this.updateStats();
-            }
-
-            updateUploadList() {
-                const uploadList = document.getElementById('uploadList');
-                
-                if (this.uploads.length === 0) {
-                    uploadList.innerHTML = `
-                        <li class="upload-item">
-                            <div class="upload-item-header">
-                                <div class="upload-item-name">No uploads yet</div>
-                            </div>
-                            <div class="upload-item-details">
-                                <div class="detail-item">
-                                    <div class="detail-label">Status</div>
-                                    <div class="detail-value">Upload your first document to see it here</div>
-                                </div>
-                            </div>
-                        </li>
-                    `;
-                    return;
-                }
-
-                uploadList.innerHTML = this.uploads.map((upload, index) => `
-                    <li class="upload-item">
-                        <div class="upload-item-header">
-                            <div class="upload-item-name">${upload.name}</div>
-                            <div class="upload-item-status status-${upload.status}">
-                                ${upload.status === 'vaulted' ? 'Secured' : upload.status}
-                            </div>
-                        </div>
-                        <div class="upload-item-details">
-                            <div class="detail-item">
-                                <div class="detail-label">Document #${index + 1}</div>
-                                <div class="detail-value">${this.formatFileSize(upload.size)} • ${new Date(upload.timestamp).toLocaleDateString()}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Security Hash</div>
-                                <div class="detail-value">${upload.hash.substring(0, 16)}...${upload.hash.substring(upload.hash.length - 16)}</div>
-                                <button class="detail-copy" onclick="navigator.clipboard.writeText('${upload.hash}')">Copy Hash</button>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Document ID</div>
-                                <div class="detail-value">${upload.id.substring(0, 8)}...${upload.id.substring(upload.id.length - 8)}</div>
-                                <button class="detail-copy" onclick="navigator.clipboard.writeText('${upload.id}')">Copy ID</button>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Network</div>
-                                <div class="detail-value">Nillion SecretVaults</div>
-                            </div>
-                        </div>
-                    </li>
-                `).join('');
-            }
-
-            updateStats() {
-                document.getElementById('totalUploads').textContent = this.uploads.length;
-                
-                const totalSize = this.uploads.reduce((sum, upload) => sum + upload.size, 0);
-                document.getElementById('totalDataSize').textContent = `${(totalSize / (1024 * 1024)).toFixed(2)} MB`;
-                
-                const successCount = this.uploads.filter(upload => upload.status === 'vaulted').length;
-                document.getElementById('successfulUploads').textContent = successCount;
-            }
 
             async verifyDocument() {
                 const proofHash = document.getElementById('proofHash').value.trim();
@@ -955,7 +905,7 @@
                 verifyResult.style.display = 'none';
 
                 try {
-                    const response = await fetch('https://nillionvault-backend.onrender.com/api/credentials/verify', {
+                    const response = await fetch('http://localhost:3001/api/credentials/verify', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -967,6 +917,15 @@
 
                     if (response.ok) {
                         if (data.success && data.credential) {
+                            const hasContent = data.credential.content && data.credential.content.trim();
+                            const contentDisplay = hasContent 
+                                ? `<div class="result-detail" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e9ecef;">
+                                        <div class="result-label" style="margin-bottom: 0.5rem; font-weight: 600;">Retrieved Message:</div>
+                                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word; font-family: 'Courier New', monospace; max-height: 300px; overflow-y: auto;">${this.escapeHtml(data.credential.content)}</div>
+                                        <button class="copy-btn" onclick="navigator.clipboard.writeText('${this.escapeForJs(data.credential.content)}')" style="margin-top: 0.5rem;">Copy Message</button>
+                                   </div>`
+                                : '';
+                            
                             verifyResult.innerHTML = `
                                 <div class="result success">
                                     <div class="result-title">Verification Successful</div>
@@ -991,6 +950,24 @@
                                         <span class="result-label">Network Status:</span>
                                         <span class="result-value">Nillion Network Active</span>
                                     </div>
+                                    ${data.credential.anchorStatus ? `
+                                    <div class="result-detail">
+                                        <span class="result-label">Anchoring Status:</span>
+                                        <span class="result-value" style="color: ${data.credential.anchorStatus === 'verified' || data.credential.anchorStatus === 'confirmed' ? '#28a745' : data.credential.anchorStatus === 'pending' ? '#ffc107' : '#6c757d'};">
+                                            ${data.credential.anchorStatus === 'verified' || data.credential.anchorStatus === 'confirmed' ? '✓ Anchored & Verified' : 
+                                              data.credential.anchorStatus === 'pending' ? '⏳ Pending' : 
+                                              data.credential.anchorStatus === 'failed' ? '✗ Failed' : 
+                                              'Not Anchored'}
+                                        </span>
+                                    </div>
+                                    ${data.credential.anchorTxHash ? `
+                                    <div class="result-detail">
+                                        <span class="result-label">Anchor Hash:</span>
+                                        <span class="result-value" style="font-family: monospace; font-size: 0.875rem;">${data.credential.anchorTxHash.substring(0, 16)}...${data.credential.anchorTxHash.substring(data.credential.anchorTxHash.length - 16)}</span>
+                                    </div>
+                                    ` : ''}
+                                    ` : ''}
+                                    ${contentDisplay}
                                 </div>
                             `;
                             verifyResult.style.display = 'block';
@@ -1017,6 +994,448 @@
                 const sizes = ['Bytes', 'KB', 'MB', 'GB'];
                 const i = Math.floor(Math.log(bytes) / Math.log(k));
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            escapeForJs(text) {
+                return text.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+            }
+
+            async loadAllMessages() {
+                const listBtn = document.getElementById('listBtn');
+                const refreshListBtn = document.getElementById('refreshListBtn');
+                const listResult = document.getElementById('listResult');
+
+                listBtn.disabled = true;
+                listBtn.innerHTML = '<div class="spinner"></div> Loading...';
+                refreshListBtn.style.display = 'none';
+                listResult.innerHTML = '';
+
+                try {
+                    const response = await fetch('http://localhost:3001/api/credentials/list?limit=100', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        this.allCredentials = data.credentials || [];
+                        
+                        // Update statistics
+                        this.updateStatistics(this.allCredentials);
+                        
+                        // Apply filters and display
+                        this.applyFilters();
+                        
+                        refreshListBtn.style.display = 'inline-flex';
+                        const exportAllBtn = document.getElementById('exportAllBtn');
+                        const exportSelectedBtn = document.getElementById('exportSelectedBtn');
+                        if (exportAllBtn) exportAllBtn.style.display = 'inline-flex';
+                        if (exportSelectedBtn) exportSelectedBtn.style.display = 'inline-flex';
+                    } else {
+                        listResult.innerHTML = `<div class="result error">Failed to load messages: ${data.message || 'Unknown error'}</div>`;
+                    }
+                } catch (error) {
+                    listResult.innerHTML = `<div class="result error">Error loading messages: ${error.message}</div>`;
+                } finally {
+                    listBtn.disabled = false;
+                    listBtn.innerHTML = 'Load Messages';
+                }
+            }
+
+            updateStatistics(credentials) {
+                const total = credentials.length;
+                const totalSize = credentials.reduce((sum, cred) => sum + (cred.size_bytes || 0), 0);
+                const statsDiv = document.getElementById('messageStats');
+                
+                if (statsDiv && total > 0) {
+                    statsDiv.style.display = 'block';
+                    document.getElementById('statTotal').textContent = total;
+                    document.getElementById('statSize').textContent = this.formatFileSize(totalSize);
+                } else if (statsDiv) {
+                    statsDiv.style.display = 'none';
+                }
+            }
+
+            applyFilters() {
+                if (this.allCredentials.length === 0) return;
+
+                const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+                const dateFrom = document.getElementById('dateFrom')?.value || '';
+                const dateTo = document.getElementById('dateTo')?.value || '';
+                const sortBy = document.getElementById('sortBy')?.value || 'newest';
+
+                // Filter by search term
+                let filtered = this.allCredentials.filter(cred => {
+                    const matchesSearch = !searchTerm || 
+                        (cred.file_name && cred.file_name.toLowerCase().includes(searchTerm)) ||
+                        (cred.content && cred.content.toLowerCase().includes(searchTerm)) ||
+                        (cred.proof_hash && cred.proof_hash.toLowerCase().includes(searchTerm));
+
+                    if (!matchesSearch) return false;
+
+                    // Filter by date range
+                    if (dateFrom || dateTo) {
+                        const credDate = new Date(cred.created_at || cred.stored_at);
+                        if (dateFrom && credDate < new Date(dateFrom)) return false;
+                        if (dateTo) {
+                            const toDate = new Date(dateTo);
+                            toDate.setHours(23, 59, 59, 999); // Include entire end date
+                            if (credDate > toDate) return false;
+                        }
+                    }
+
+                    return true;
+                });
+
+                // Sort
+                filtered = [...filtered].sort((a, b) => {
+                    switch (sortBy) {
+                        case 'oldest':
+                            return new Date(a.created_at || a.stored_at) - new Date(b.created_at || b.stored_at);
+                        case 'name':
+                            return (a.file_name || '').localeCompare(b.file_name || '');
+                        case 'size':
+                            return (b.size_bytes || 0) - (a.size_bytes || 0);
+                        case 'newest':
+                        default:
+                            return new Date(b.created_at || b.stored_at) - new Date(a.created_at || a.stored_at);
+                    }
+                });
+
+                this.filteredCredentials = filtered;
+                this.updateStatistics(this.allCredentials);
+                document.getElementById('statFiltered').textContent = filtered.length;
+                this.displayMessages(filtered);
+            }
+
+            clearFilters() {
+                document.getElementById('searchInput').value = '';
+                document.getElementById('dateFrom').value = '';
+                document.getElementById('dateTo').value = '';
+                document.getElementById('sortBy').value = 'newest';
+                this.applyFilters();
+            }
+
+            displayMessages(credentials) {
+                const listResult = document.getElementById('listResult');
+                
+                if (credentials.length === 0) {
+                    listResult.innerHTML = `
+                        <div class="result" style="padding: 2rem; text-align: center; color: #6c757d;">
+                            <p>No messages found matching your filters.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const messagesHtml = credentials.map((cred, index) => {
+                                const hasContent = cred.content && cred.content.trim();
+                                const contentPreview = hasContent 
+                                    ? (cred.content.length > 100 
+                                        ? cred.content.substring(0, 100) + '...' 
+                                        : cred.content)
+                                    : 'No content available';
+                                
+                                return `
+                                    <div style="background: #fff; border: 1px solid #e9ecef; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem;">
+                                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                            <div style="flex: 1;">
+                                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                                    <input type="checkbox" class="message-checkbox" data-id="${cred._id}" style="width: 18px; height: 18px; cursor: pointer;">
+                                                    <div style="font-weight: 600;">${this.escapeHtml(cred.file_name || 'message.txt')}</div>
+                                                </div>
+                                                <div style="font-size: 0.875rem; color: #6c757d;">
+                                                    ${new Date(cred.created_at || cred.stored_at).toLocaleString()} • ${this.formatFileSize(cred.size_bytes || 0)}
+                                                </div>
+                                            </div>
+                                            <div style="font-size: 0.75rem; color: #6c757d; text-align: right;">
+                                                <div>Status: <span style="color: #28a745;">${cred.status || 'vaulted'}</span></div>
+                                            </div>
+                                        </div>
+                                        
+                                        ${hasContent ? `
+                                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 1rem;">
+                                            <div style="font-size: 0.875rem; color: #6c757d; margin-bottom: 0.5rem;">Message Preview:</div>
+                                            <div style="font-family: 'Courier New', monospace; white-space: pre-wrap; word-wrap: break-word; max-height: 150px; overflow-y: auto;">${this.escapeHtml(contentPreview)}</div>
+                                        </div>
+                                        ` : ''}
+                                        
+                                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                            <button class="copy-btn" onclick="navigator.clipboard.writeText('${cred.proof_hash}')">Copy Hash</button>
+                                            <button class="copy-btn" onclick="document.getElementById('proofHash').value = '${cred.proof_hash}'; document.querySelector('a[href=\\'#verify\\']').click();">Verify This</button>
+                                            ${hasContent ? `<button class="copy-btn" onclick="navigator.clipboard.writeText('${this.escapeForJs(cred.content)}')">Copy Message</button>` : ''}
+                                            <button class="copy-btn" style="background: #dc3545; color: white;" onclick="app.deleteMessage('${cred._id}', '${this.escapeForJs(cred.file_name || 'message')}')">Delete</button>
+                                        </div>
+                                        
+                                        <div style="margin-top: 0.75rem; font-size: 0.75rem; color: #6c757d; font-family: monospace; word-break: break-all;">
+                                            Hash: ${cred.proof_hash.substring(0, 16)}...${cred.proof_hash.substring(cred.proof_hash.length - 16)}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('');
+
+                            listResult.innerHTML = `
+                                <div>
+                                    ${credentials.length !== this.allCredentials.length ? `
+                                    <div style="margin-bottom: 1rem; padding: 0.75rem; background: #fff3cd; border-radius: 4px; color: #856404;">
+                                        Showing ${credentials.length} of ${this.allCredentials.length} message${this.allCredentials.length !== 1 ? 's' : ''}
+                                    </div>
+                                    ` : ''}
+                                    ${messagesHtml}
+                                </div>
+                            `;
+            }
+
+            exportAll() {
+                const credentials = this.filteredCredentials.length > 0 ? this.filteredCredentials : this.allCredentials;
+                this.exportCredentials(credentials, 'all-messages');
+            }
+
+            exportSelected() {
+                const checkboxes = document.querySelectorAll('.message-checkbox:checked');
+                if (checkboxes.length === 0) {
+                    alert('Please select at least one message to export.');
+                    return;
+                }
+
+                const selectedIds = Array.from(checkboxes).map(cb => cb.getAttribute('data-id'));
+                const selected = this.filteredCredentials.filter(cred => selectedIds.includes(cred._id));
+                this.exportCredentials(selected, 'selected-messages');
+            }
+
+            exportCredentials(credentials, filename) {
+                if (credentials.length === 0) {
+                    alert('No messages to export.');
+                    return;
+                }
+
+                // Create JSON export
+                const exportData = {
+                    exportDate: new Date().toISOString(),
+                    totalMessages: credentials.length,
+                    messages: credentials.map(cred => ({
+                        id: cred.id || cred.credential_id,
+                        proof_hash: cred.proof_hash,
+                        file_name: cred.file_name,
+                        file_type: cred.file_type,
+                        size_bytes: cred.size_bytes,
+                        created_at: cred.created_at || cred.stored_at,
+                        status: cred.status,
+                        content: cred.content || null
+                    }))
+                };
+
+                // Create and download file
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${filename}-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            async deleteMessage(recordId, fileName) {
+                if (!confirm(`Are you sure you want to delete "${fileName}"? This action cannot be undone.`)) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`http://localhost:3001/api/credentials/${recordId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        // Show success message
+                        const listResult = document.getElementById('listResult');
+                        listResult.innerHTML = `
+                            <div class="result success" style="margin-bottom: 1rem;">
+                                Message deleted successfully!
+                            </div>
+                        `;
+                        
+                        // Reload the list after a short delay
+                        setTimeout(() => {
+                            this.loadAllMessages();
+                        }, 500);
+                    } else {
+                        alert(`Failed to delete message: ${data.message || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    alert(`Error deleting message: ${error.message}`);
+                }
+            }
+
+            async uploadBulkMessages() {
+                const bulkMessagesText = document.getElementById('bulkMessages').value.trim();
+                const bulkResult = document.getElementById('bulkResult');
+                const uploadBulkBtn = document.getElementById('uploadBulkBtn');
+
+                if (!bulkMessagesText) {
+                    bulkResult.innerHTML = '<div class="result error">Please enter at least one message.</div>';
+                    bulkResult.style.display = 'block';
+                    return;
+                }
+
+                // Split by newlines and filter out empty lines
+                const messages = bulkMessagesText.split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0);
+
+                if (messages.length === 0) {
+                    bulkResult.innerHTML = '<div class="result error">No valid messages found. Please enter at least one non-empty message.</div>';
+                    bulkResult.style.display = 'block';
+                    return;
+                }
+
+                if (messages.length > 50) {
+                    bulkResult.innerHTML = '<div class="result error">Too many messages. Maximum 50 messages at once.</div>';
+                    bulkResult.style.display = 'block';
+                    return;
+                }
+
+                uploadBulkBtn.disabled = true;
+                uploadBulkBtn.innerHTML = '<div class="spinner"></div> Uploading...';
+                bulkResult.innerHTML = '';
+                bulkResult.style.display = 'none';
+
+                const results = {
+                    success: [],
+                    failed: [],
+                    total: messages.length
+                };
+
+                // Upload messages one by one (in sequence to avoid overwhelming the server)
+                for (let i = 0; i < messages.length; i++) {
+                    const message = messages[i];
+                    uploadBulkBtn.innerHTML = `<div class="spinner"></div> Uploading ${i + 1}/${messages.length}...`;
+
+                    try {
+                        const formData = new FormData();
+                        const blob = new Blob([message], { type: 'text/plain' });
+                        formData.append('file', blob, `message-${i + 1}.txt`);
+
+                        const response = await fetch('http://localhost:3001/api/credentials/upload', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok && data.success) {
+                            results.success.push({
+                                index: i + 1,
+                                message: message.substring(0, 50) + (message.length > 50 ? '...' : ''),
+                                proofHash: data.proofHash,
+                                credentialId: data.credentialId
+                            });
+                        } else {
+                            results.failed.push({
+                                index: i + 1,
+                                message: message.substring(0, 50) + (message.length > 50 ? '...' : ''),
+                                error: data.message || 'Unknown error'
+                            });
+                        }
+                    } catch (error) {
+                        results.failed.push({
+                            index: i + 1,
+                            message: message.substring(0, 50) + (message.length > 50 ? '...' : ''),
+                            error: error.message
+                        });
+                    }
+
+                    // Small delay between uploads to avoid rate limiting
+                    if (i < messages.length - 1) {
+                        await new Promise(resolve => setTimeout(resolve, 200));
+                    }
+                }
+
+                // Display results
+                let resultHtml = `
+                    <div class="result ${results.failed.length === 0 ? 'success' : 'warning'}" style="margin-bottom: 1rem;">
+                        <div class="result-title">Bulk Upload Complete</div>
+                        <div class="result-detail">
+                            <span class="result-label">Total:</span>
+                            <span class="result-value">${results.total}</span>
+                        </div>
+                        <div class="result-detail">
+                            <span class="result-label">Successful:</span>
+                            <span class="result-value" style="color: #28a745;">${results.success.length}</span>
+                        </div>
+                        <div class="result-detail">
+                            <span class="result-label">Failed:</span>
+                            <span class="result-value" style="color: #dc3545;">${results.failed.length}</span>
+                        </div>
+                    </div>
+                `;
+
+                if (results.success.length > 0) {
+                    resultHtml += `
+                        <div style="margin-top: 1rem;">
+                            <h4 style="font-size: 1rem; margin-bottom: 0.5rem; color: #28a745;">✓ Successfully Uploaded (${results.success.length})</h4>
+                            <div style="max-height: 200px; overflow-y: auto; background: #f8f9fa; padding: 1rem; border-radius: 4px;">
+                                ${results.success.map(item => `
+                                    <div style="padding: 0.5rem 0; border-bottom: 1px solid #dee2e6;">
+                                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Message ${item.index}:</div>
+                                        <div style="font-size: 0.875rem; color: #6c757d; margin-bottom: 0.25rem;">${this.escapeHtml(item.message)}</div>
+                                        <div style="font-size: 0.75rem; font-family: monospace; color: #007bff; word-break: break-all;">Hash: ${item.proofHash.substring(0, 16)}...${item.proofHash.substring(item.proofHash.length - 16)}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                if (results.failed.length > 0) {
+                    resultHtml += `
+                        <div style="margin-top: 1rem;">
+                            <h4 style="font-size: 1rem; margin-bottom: 0.5rem; color: #dc3545;">✗ Failed Uploads (${results.failed.length})</h4>
+                            <div style="max-height: 200px; overflow-y: auto; background: #fff3cd; padding: 1rem; border-radius: 4px; border: 1px solid #ffc107;">
+                                ${results.failed.map(item => `
+                                    <div style="padding: 0.5rem 0; border-bottom: 1px solid #ffc107;">
+                                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Message ${item.index}:</div>
+                                        <div style="font-size: 0.875rem; color: #6c757d; margin-bottom: 0.25rem;">${this.escapeHtml(item.message)}</div>
+                                        <div style="font-size: 0.75rem; color: #dc3545;">Error: ${this.escapeHtml(item.error)}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                bulkResult.innerHTML = resultHtml;
+                bulkResult.style.display = 'block';
+
+                uploadBulkBtn.disabled = false;
+                uploadBulkBtn.innerHTML = 'Upload All Messages';
+
+                // Clear the bulk messages textarea if all succeeded
+                if (results.failed.length === 0) {
+                    document.getElementById('bulkMessages').value = '';
+                }
+
+                // Optionally refresh the message list
+                if (results.success.length > 0) {
+                    setTimeout(() => {
+                        this.loadAllMessages();
+                    }, 1000);
+                }
             }
         }
 

@@ -70,6 +70,7 @@ function errorHandler(err, req, res, next) {
 
   const response = {
     error: message,
+    message: message, // Add message field for frontend compatibility
     timestamp: new Date().toISOString(),
     path: req.path
   };
@@ -82,6 +83,11 @@ function errorHandler(err, req, res, next) {
   // Include additional error details if available
   if (err.details) {
     response.details = err.details;
+  }
+
+  // Include full error message in development
+  if (isDevelopment) {
+    response.fullError = err.message;
   }
 
   res.status(statusCode).json(response);
