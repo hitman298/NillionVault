@@ -1022,7 +1022,7 @@ class NillionService {
           errorMessage,
           ...errorDetails,
             collectionId,
-          credentialId,
+        credentialId,
           recordFields: Object.keys(credentialRecord),
           recordSizes: {
             _id: Buffer.from(String(credentialRecord._id), 'utf8').length,
@@ -1195,13 +1195,13 @@ class NillionService {
       }
 
       logger.info('Credential stored in real NillionDB collection', { 
-      credentialId, 
+        credentialId,
         collectionId: collectionId,
-      dataSize: data.length 
-    });
-
+        dataSize: data.length
+      });
+      
       return collectionId;
-
+      
     } catch (error) {
       // Log full error details
       const errorDetails = {
@@ -1712,14 +1712,10 @@ class NillionService {
           // Apply pagination
           const paginatedData = dataArray.slice(offset, offset + limit);
 
-          // Map to credential format
+          // Map to credential format (PRIVACY: Do not return decrypted content in list - only via verification)
           const credentials = paginatedData.map(record => {
-            let decryptedContent = null;
-            if (record.document_content && record.document_content['%allot']) {
-              decryptedContent = record.document_content['%allot'];
-            } else if (typeof record.document_content === 'string') {
-              decryptedContent = record.document_content;
-            }
+            // Do not decrypt content here - only return metadata for privacy
+            // Content can only be accessed via verification endpoint with proof_hash
 
             return {
               id: record.credential_id,
@@ -1730,7 +1726,7 @@ class NillionService {
               stored_at: record.stored_at,
               created_at: record.stored_at,
               _id: record._id,
-              content: decryptedContent,
+              // content is NOT included here - requires verification via /verify endpoint
               status: 'vaulted'
             };
           });

@@ -599,7 +599,11 @@
             <!-- List Messages Section -->
             <section class="section" id="list">
                 <h2 class="section-title">My Messages</h2>
-                <p class="section-description">View all your stored messages from NillionDB.</p>
+                <p class="section-description">
+                    <strong>🔐 Secure Message Management:</strong> View metadata of your encrypted messages stored on NillionDB. 
+                    Message content is encrypted and can only be decrypted using the verification hash. 
+                    Use "Verify & Decrypt" to access message content securely.
+                </p>
                 
                 <!-- Statistics Section -->
                 <div id="messageStats" style="display: none; margin-bottom: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; color: white;">
@@ -623,7 +627,7 @@
                 <div style="margin-bottom: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
                     <div class="form-group" style="margin-bottom: 1rem;">
                         <label class="form-label" for="searchInput">Search Messages</label>
-                        <input type="text" class="form-input" id="searchInput" placeholder="Search by filename or content...">
+                        <input type="text" class="form-input" id="searchInput" placeholder="Search by filename or hash (content requires verification)...">
                     </div>
                     <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: end;">
                         <div class="form-group" style="flex: 1; min-width: 150px;">
@@ -1073,11 +1077,10 @@
                 const dateTo = document.getElementById('dateTo')?.value || '';
                 const sortBy = document.getElementById('sortBy')?.value || 'newest';
 
-                // Filter by search term
+                // Filter by search term (only filename and hash - content requires verification)
                 let filtered = this.allCredentials.filter(cred => {
                     const matchesSearch = !searchTerm || 
                         (cred.file_name && cred.file_name.toLowerCase().includes(searchTerm)) ||
-                        (cred.content && cred.content.toLowerCase().includes(searchTerm)) ||
                         (cred.proof_hash && cred.proof_hash.toLowerCase().includes(searchTerm));
 
                     if (!matchesSearch) return false;
@@ -1138,13 +1141,6 @@
                 }
 
                 const messagesHtml = credentials.map((cred, index) => {
-                                const hasContent = cred.content && cred.content.trim();
-                                const contentPreview = hasContent 
-                                    ? (cred.content.length > 100 
-                                        ? cred.content.substring(0, 100) + '...' 
-                                        : cred.content)
-                                    : 'No content available';
-                                
                                 return `
                                     <div style="background: #fff; border: 1px solid #e9ecef; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem;">
                                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
@@ -1153,31 +1149,27 @@
                                                     <input type="checkbox" class="message-checkbox" data-id="${cred._id}" style="width: 18px; height: 18px; cursor: pointer;">
                                                     <div style="font-weight: 600;">${this.escapeHtml(cred.file_name || 'message.txt')}</div>
                                                 </div>
-                                                <div style="font-size: 0.875rem; color: #6c757d;">
+                                                <div style="font-size: 0.875rem; color: #6c757d; margin-bottom: 0.5rem;">
                                                     ${new Date(cred.created_at || cred.stored_at).toLocaleString()} • ${this.formatFileSize(cred.size_bytes || 0)}
+                                                </div>
+                                                <div style="font-size: 0.75rem; color: #6c757d; font-family: monospace; word-break: break-all; background: #f8f9fa; padding: 0.5rem; border-radius: 4px;">
+                                                    🔐 Hash: ${cred.proof_hash.substring(0, 20)}...${cred.proof_hash.substring(cred.proof_hash.length - 20)}
                                                 </div>
                                             </div>
                                             <div style="font-size: 0.75rem; color: #6c757d; text-align: right;">
-                                                <div>Status: <span style="color: #28a745;">${cred.status || 'vaulted'}</span></div>
+                                                <div style="margin-bottom: 0.25rem;">Status: <span style="color: #28a745; font-weight: 600;">✓ Encrypted</span></div>
+                                                <div style="color: #17a2b8; font-size: 0.7rem;">🔒 Secure Storage</div>
                                             </div>
                                         </div>
                                         
-                                        ${hasContent ? `
-                                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 1rem;">
-                                            <div style="font-size: 0.875rem; color: #6c757d; margin-bottom: 0.5rem;">Message Preview:</div>
-                                            <div style="font-family: 'Courier New', monospace; white-space: pre-wrap; word-wrap: break-word; max-height: 150px; overflow-y: auto;">${this.escapeHtml(contentPreview)}</div>
+                                        <div style="background: #e7f3ff; border-left: 3px solid #0066cc; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; font-size: 0.8rem; color: #004085;">
+                                            <strong>🔐 Privacy Note:</strong> Message content is encrypted and can only be accessed with the verification hash. Use "Verify This" to decrypt and view the message.
                                         </div>
-                                        ` : ''}
                                         
                                         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                                            <button class="copy-btn" onclick="navigator.clipboard.writeText('${cred.proof_hash}')">Copy Hash</button>
-                                            <button class="copy-btn" onclick="document.getElementById('proofHash').value = '${cred.proof_hash}'; document.querySelector('a[href=\\'#verify\\']').click();">Verify This</button>
-                                            ${hasContent ? `<button class="copy-btn" onclick="navigator.clipboard.writeText('${this.escapeForJs(cred.content)}')">Copy Message</button>` : ''}
-                                            <button class="copy-btn" style="background: #dc3545; color: white;" onclick="app.deleteMessage('${cred._id}', '${this.escapeForJs(cred.file_name || 'message')}')">Delete</button>
-                                        </div>
-                                        
-                                        <div style="margin-top: 0.75rem; font-size: 0.75rem; color: #6c757d; font-family: monospace; word-break: break-all;">
-                                            Hash: ${cred.proof_hash.substring(0, 16)}...${cred.proof_hash.substring(cred.proof_hash.length - 16)}
+                                            <button class="copy-btn" onclick="navigator.clipboard.writeText('${cred.proof_hash}')" title="Copy verification hash">📋 Copy Hash</button>
+                                            <button class="copy-btn" style="background: #0066cc; color: white; font-weight: 600;" onclick="document.getElementById('proofHash').value = '${cred.proof_hash}'; document.querySelector('a[href=\\'#verify\\']').click();" title="Decrypt and verify this message">🔓 Verify & Decrypt</button>
+                                            <button class="copy-btn" style="background: #dc3545; color: white;" onclick="app.deleteMessage('${cred._id}', '${this.escapeForJs(cred.file_name || 'message')}')" title="Permanently delete this message">🗑️ Delete</button>
                                         </div>
                                     </div>
                                 `;
