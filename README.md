@@ -6,18 +6,31 @@ A **production-ready** secure message storage platform powered by **Nillion Netw
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![Nillion](https://img.shields.io/badge/Nillion-Testnet-blue.svg)](https://nillion.network/)
 
+## 🌐 Live Demo
+
+**🚀 Try it now**: [https://nillionvault-frontend.onrender.com/](https://nillionvault-frontend.onrender.com/)
+
+- ✅ **Store Messages** with end-to-end encryption
+- ✅ **Verify & Decrypt** using proof hashes
+- ✅ **Manage Messages** with search, filter, and export
+- ✅ **Blockchain Anchoring** for immutable proof
+
+**Backend API**: https://nillionvault-backend.onrender.com  
+**Health Check**: https://nillionvault-backend.onrender.com/health
+
 ## ✨ Key Features
 
 - 🔒 **Secure Message Storage**: Store text messages with end-to-end encryption on Nillion SecretVaults
 - 📦 **Bulk Upload**: Upload multiple messages at once (up to 50 messages)
 - 🔐 **Cryptographic Verification**: SHA-256 hash generation for message authenticity
 - 📊 **Message Management**: 
-  - View all stored messages with previews
-  - Search and filter messages by content, date range
+  - View all stored messages (metadata only - privacy-first)
+  - Search and filter messages by filename and hash
   - Sort by date, name, or size
   - Export messages (all or selected) as JSON
   - Delete messages
   - View message statistics
+  - **Privacy-First**: Message content only accessible via verification hash
 - 🔗 **Blockchain Anchoring**: Automatic anchoring to nilChain for immutable proof of existence
 - 🎯 **Clean UI**: Modern, professional interface focused on usability
 - ⚡ **Real-time Processing**: Instant feedback on storage and verification
@@ -213,6 +226,8 @@ console.log('Retrieved Message:', verifyData.credential.content);
 - ✅ **SHA-256 Hashing**: Cryptographically secure proof hash for verification
 - ✅ **Distributed Storage**: Data replicated across multiple Nillion nodes
 - ✅ **Blockchain Anchoring**: Immutable proof on nilChain blockchain
+- ✅ **Privacy-First**: Message content not exposed in list view - requires verification hash
+- ✅ **Verification-Only Access**: Content only decryptable with proof hash
 - ✅ **Input Validation**: Comprehensive validation and sanitization
 - ✅ **CORS Protection**: Configured for production security
 - ✅ **Error Handling**: Graceful error handling with detailed logging
@@ -272,12 +287,13 @@ console.log('Retrieved Message:', verifyData.credential.content);
 - Verify blockchain anchoring status
 
 ### My Messages
-- List all stored messages
-- Preview message content
-- Quick actions: Copy Hash, Verify, Copy Message, Delete
+- List all stored messages (metadata only)
+- **Privacy-First Design**: No content previews - only accessible via verification
+- Quick actions: Copy Hash, Verify & Decrypt, Delete
+- Search by filename and hash
 
 ### Search & Filter
-- Real-time search by content
+- Real-time search by filename and hash (content requires verification)
 - Filter by date range
 - Sort by: Newest First, Oldest First, Name (A-Z), Size (Largest)
 
@@ -306,7 +322,7 @@ console.log('Retrieved Message:', verifyData.credential.content);
 
 **Backend (Render)**
 ```bash
-# Connect GitHub repo to Render
+# Connect GitHub repo to Render  
 # Build Command: cd backend && npm install
 # Start Command: cd backend && npm start
 # Add environment variables in dashboard
@@ -331,7 +347,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md).
 ### Development Areas
 - 🔧 Nillion SecretVaults SDK integration improvements
 - 🚀 Performance optimizations
-- 🎨 UI/UX enhancements
+- 🎨 UI/UX enhancements  
 - 📱 Mobile responsiveness
 - 🔐 Additional security features
 - 📊 Advanced analytics
@@ -364,13 +380,40 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - 📖 [Documentation](docs/) - Complete guides
 - 🌐 [Nillion Community](https://discord.gg/nillion) - Nillion ecosystem support
 
+## 🎉 Project Status
+
+This project is **production-ready** and fully deployed:
+
+✅ **Complete Features:**
+- Secure message storage with Nillion SecretVaults encryption
+- Bulk message upload (up to 50 messages)
+- Message verification and decryption via proof hash
+- Message list with metadata (privacy-first, no content previews)
+- Search and filter functionality
+- Export messages (JSON format)
+- Delete messages
+- Message statistics dashboard
+- Blockchain anchoring to nilChain
+- Clean, professional UI
+
+✅ **Deployment:**
+- Frontend: Live on Render
+- Backend: Live on Render
+- All features tested and working
+
+✅ **Security:**
+- End-to-end encryption via Nillion
+- Privacy-first design (no content exposure)
+- Verification-required access
+- Blockchain anchoring for immutable proof
+
 ---
 
 <div align="center">
 
 **🔐 NillionVault** - *Secure message storage powered by Nillion Network*
 
-[⭐ Star this repo](https://github.com/hitman298/NillionVault) | [🐛 Report Bug](https://github.com/hitman298/NillionVault/issues) | [💡 Request Feature](https://github.com/hitman298/NillionVault/discussions)
+🌐 **[Live Demo](https://nillionvault-frontend.onrender.com/)** | [⭐ Star this repo](https://github.com/hitman298/NillionVault) | [🐛 Report Bug](https://github.com/hitman298/NillionVault/issues) | [💡 Request Feature](https://github.com/hitman298/NillionVault/discussions)
 
 *Built with ❤️ for the Nillion ecosystem*
 
