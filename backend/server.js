@@ -1,3 +1,9 @@
+// VERY FIRST LINE - Ensures we know the file loaded
+console.log('=== NillionVault Backend Starting ===');
+console.log('Node version:', process.version);
+console.log('Working directory:', process.cwd());
+console.log('Environment:', process.env.NODE_ENV || 'not set');
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -5,6 +11,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 
 // Load environment variables
+console.log('📦 Loading environment variables...');
 dotenv.config();
 
 // Log startup attempt
@@ -103,11 +110,28 @@ process.on('SIGINT', () => {
   process.exit(0);
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 NillionVault Backend running on port ${PORT}`);
-  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
+// Start server with error handling
+try {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 NillionVault Backend running on port ${PORT}`);
+    console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🔗 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
+    console.log('✅ Server started successfully!');
+  });
+} catch (error) {
+  console.error('❌ Failed to start server:', error);
+  process.exit(1);
+}
+
+// Handle uncaught errors
+process.on('uncaughtException', (error) => {
+  console.error('❌ Uncaught Exception:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
 });
 
 module.exports = app;
