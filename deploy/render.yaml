@@ -1,74 +1,49 @@
-# Render deployment configuration for NillionVault Backend
+# Render deployment configuration for NillionVault
 # Deploy to: https://render.com
+# This configuration deploys both backend and frontend services
 
 services:
+  # Backend API Service
   - type: web
     name: nillionvault-backend
     env: node
-    plan: free
+    plan: free  # Change to 'starter' or 'standard' for better performance
     buildCommand: cd backend && npm install
     startCommand: cd backend && npm start
     healthCheckPath: /health
     envVars:
+      # Nillion Configuration (Required)
+      - key: BUILDER_PRIVATE_KEY
+        sync: false  # Set this in Render dashboard
+      - key: NILCHAIN_URL
+        value: http://rpc.testnet.nilchain-rpc-proxy.nilogy.xyz
+      - key: NILAUTH_URL
+        value: https://nilauth.sandbox.app-cluster.sandbox.nilogy.xyz
+      - key: NILDB_NODES
+        value: https://nildb-stg-n1.nillion.network,https://nildb-stg-n2.nillion.network,https://nildb-stg-n3.nillion.network
+      - key: NILLION_NETWORK
+        value: testnet
+      
+      # Server Configuration
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 10000
-      - key: DATABASE_URL
-        fromDatabase:
-          name: nillionvault-db
-          property: connectionString
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_SERVICE_ROLE_KEY
-        sync: false
-      - key: SUPABASE_ANON_KEY
-        sync: false
-      - key: NILLION_API_KEY
-        sync: false
-      - key: NILLION_RPC_URL
-        value: https://rpc-testnet.nillion.com
-      - key: NILLION_NETWORK
-        value: testnet
-      - key: DEV_ADDRESS_PRIVATE_KEY
-        sync: false
-      - key: UPSTASH_REDIS_REST_URL
-        sync: false
-      - key: UPSTASH_REDIS_REST_TOKEN
-        sync: false
+        value: 10000  # Render uses port 10000 or provided port
+      
+      # Frontend URL (Update after deploying frontend)
       - key: FRONTEND_URL
-        value: https://nillionvault.vercel.app
+        value: https://nillionvault-frontend.onrender.com
+        # OR if using Vercel: https://your-app.vercel.app
 
-  - type: worker
-    name: nillionvault-worker
+  # Frontend Static Service (Optional - can also use Vercel)
+  - type: web
+    name: nillionvault-frontend
     env: node
     plan: free
-    buildCommand: cd backend && npm install
-    startCommand: cd backend && node services/worker.js
+    buildCommand: echo "No build needed for static files"
+    startCommand: cd frontend/public && node server.js
     envVars:
+      - key: PORT
+        value: 10000
       - key: NODE_ENV
         value: production
-      - key: DATABASE_URL
-        fromDatabase:
-          name: nillionvault-db
-          property: connectionString
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_SERVICE_ROLE_KEY
-        sync: false
-      - key: NILLION_API_KEY
-        sync: false
-      - key: NILLION_RPC_URL
-        value: https://rpc-testnet.nillion.com
-      - key: NILLION_NETWORK
-        value: testnet
-      - key: DEV_ADDRESS_PRIVATE_KEY
-        sync: false
-      - key: UPSTASH_REDIS_REST_URL
-        sync: false
-      - key: UPSTASH_REDIS_REST_TOKEN
-        sync: false
-
-databases:
-  - name: nillionvault-db
-    plan: free

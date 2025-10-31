@@ -762,7 +762,7 @@
                     const formData = new FormData();
                     formData.append('file', file);
 
-                    const response = await fetch('http://localhost:3001/api/credentials/upload', {
+                    const response = await fetch(`${API_BASE_URL}/api/credentials/upload`, {
                         method: 'POST',
                         body: formData
                     });
@@ -837,7 +837,7 @@
             async checkAnchoringStatus(proofHash) {
                 try {
                     // Query the credential to see if it has anchor info
-                    const response = await fetch('http://localhost:3001/api/credentials/verify', {
+                    const response = await fetch(`${API_BASE_URL}/api/credentials/verify`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -905,7 +905,7 @@
                 verifyResult.style.display = 'none';
 
                 try {
-                    const response = await fetch('http://localhost:3001/api/credentials/verify', {
+                    const response = await fetch(`${API_BASE_URL}/api/credentials/verify`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -1017,7 +1017,7 @@
                 listResult.innerHTML = '';
 
                 try {
-                    const response = await fetch('http://localhost:3001/api/credentials/list?limit=100', {
+                    const response = await fetch(`${API_BASE_URL}/api/credentials/list?limit=100`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json'
@@ -1252,7 +1252,7 @@
                 }
 
                 try {
-                    const response = await fetch(`http://localhost:3001/api/credentials/${recordId}`, {
+                    const response = await fetch(`${API_BASE_URL}/api/credentials/${recordId}`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json'
@@ -1331,7 +1331,7 @@
                         const blob = new Blob([message], { type: 'text/plain' });
                         formData.append('file', blob, `message-${i + 1}.txt`);
 
-                        const response = await fetch('http://localhost:3001/api/credentials/upload', {
+                        const response = await fetch(`${API_BASE_URL}/api/credentials/upload`, {
                             method: 'POST',
                             body: formData
                         });
@@ -1440,6 +1440,7 @@
         }
 
         // Initialize the application
+        const API_BASE_URL = 'https://nillionvault-backend.onrender.com';
         const app = new NillionVaultApp();
     </script>
 </body>

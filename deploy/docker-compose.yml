@@ -1,40 +1,9 @@
-# Docker Compose for local development
-# Run with: docker-compose up
+# Docker Compose for NillionVault (Nillion-only setup)
+# Run with: docker-compose -f deploy/docker-compose.yml up --build
 
 version: '3.8'
 
 services:
-  # PostgreSQL Database (alternative to Supabase for local dev)
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: nillionvault
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Redis for queue
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # Backend API
   backend:
     build:
@@ -43,46 +12,42 @@ services:
     ports:
       - "3001:3001"
     environment:
-      - NODE_ENV=development
-      - PORT=3001
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/nillionvault
-      - UPSTASH_REDIS_REST_URL=redis://redis:6379
-      - UPSTASH_REDIS_REST_TOKEN=dummy
-      - SUPABASE_URL=http://localhost:5432
-      - SUPABASE_SERVICE_ROLE_KEY=dummy
-      - NILLION_API_KEY=${NILLION_API_KEY}
-      - NILLION_RPC_URL=https://rpc-testnet.nillion.com
+      # Nillion Configuration (Set these in .env file or here)
+      - BUILDER_PRIVATE_KEY=${BUILDER_PRIVATE_KEY}
+      - NILCHAIN_URL=http://rpc.testnet.nilchain-rpc-proxy.nilogy.xyz
+      - NILAUTH_URL=https://nilauth.sandbox.app-cluster.sandbox.nilogy.xyz
+      - NILDB_NODES=https://nildb-stg-n1.nillion.network,https://nildb-stg-n2.nillion.network,https://nildb-stg-n3.nillion.network
       - NILLION_NETWORK=testnet
-      - DEV_ADDRESS_PRIVATE_KEY=${DEV_ADDRESS_PRIVATE_KEY}
+      
+      # Server Configuration
+      - NODE_ENV=production
+      - PORT=3001
       - FRONTEND_URL=http://localhost:3000
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     volumes:
       - ../backend:/app
       - /app/node_modules
-    command: npm run dev
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # Frontend
   frontend:
     build:
-      context: ../frontend
+      context: ../frontend/public
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:3001
-      - NEXT_PUBLIC_NILLION_EXPLORER=https://testnet.nillion.explorers.guru
+      - PORT=3000
+      - NODE_ENV=production
+      # Update API URL to backend service name
+      - NEXT_PUBLIC_API_URL=http://backend:3001
     depends_on:
       - backend
     volumes:
-      - ../frontend:/app
+      - ../frontend/public:/app
       - /app/node_modules
-      - /app/.next
-    command: npm run dev
-
-volumes:
-  postgres_data:
-  redis_data:
+    restart: unless-stopped

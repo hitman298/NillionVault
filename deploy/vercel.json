@@ -1,41 +1,23 @@
 {
-  "buildCommand": "cd frontend && npm run build",
-  "outputDirectory": "frontend/.next",
-  "framework": "nextjs",
-  "installCommand": "cd frontend && npm install",
-  "devCommand": "cd frontend && npm run dev",
-  "env": {
-    "NEXT_PUBLIC_API_URL": {
-      "value": "https://nillionvault-backend.onrender.com"
-    },
-    "NEXT_PUBLIC_NILLION_EXPLORER": {
-      "value": "https://testnet.nillion.explorers.guru"
-    }
-  },
-  "functions": {
-    "frontend/pages/api/**/*.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "headers": [
+  "buildCommand": "echo 'No build needed - static files'",
+  "outputDirectory": "frontend/public",
+  "framework": null,
+  "installCommand": "echo 'No install needed'",
+  "routes": [
     {
-      "source": "/tools/(.*)",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/javascript"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
+      "src": "/(.*)",
+      "dest": "/$1"
     }
   ],
-  "rewrites": [
+  "headers": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://nillionvault-backend.onrender.com/api/$1"
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
     }
   ]
 }
