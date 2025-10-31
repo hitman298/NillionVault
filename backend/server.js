@@ -7,6 +7,17 @@ const path = require('path');
 // Load environment variables
 dotenv.config();
 
+// Log startup attempt
+console.log('🚀 Starting NillionVault Backend...');
+console.log('📋 Environment check:');
+console.log(`   - NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
+console.log(`   - PORT: ${process.env.PORT || 'not set (default: 3001)'}`);
+console.log(`   - BUILDER_PRIVATE_KEY: ${process.env.BUILDER_PRIVATE_KEY ? '✅ set' : '❌ missing'}`);
+console.log(`   - NILCHAIN_URL: ${process.env.NILCHAIN_URL || '❌ missing'}`);
+console.log(`   - NILAUTH_URL: ${process.env.NILAUTH_URL || '❌ missing'}`);
+console.log(`   - NILDB_NODES: ${process.env.NILDB_NODES || '❌ missing'}`);
+console.log(`   - FRONTEND_URL: ${process.env.FRONTEND_URL || 'not set (default: localhost:3000)'}`);
+
 // Import routes (Nillion-only mode - auth/anchors removed)
 const credentialRoutes = require('./routes/credentials');
 const verificationRoutes = require('./routes/verification');
@@ -16,7 +27,22 @@ const { errorHandler, requestLogger } = require('./middleware/errorHandler');
 const { validateEnv } = require('./utils/envValidator');
 
 // Validate required environment variables
-validateEnv();
+console.log('\n🔍 Validating environment variables...');
+try {
+  validateEnv();
+} catch (error) {
+  console.error('❌ Environment validation failed:', error.message);
+  console.error('\n📝 Please set the following environment variables in Render:');
+  console.error('   1. BUILDER_PRIVATE_KEY - Your Nillion private key (hex, 64 chars)');
+  console.error('   2. NILCHAIN_URL - http://rpc.testnet.nilchain-rpc-proxy.nilogy.xyz');
+  console.error('   3. NILAUTH_URL - https://nilauth.sandbox.app-cluster.sandbox.nilogy.xyz');
+  console.error('   4. NILDB_NODES - https://nildb-stg-n1.nillion.network,https://nildb-stg-n2.nillion.network,https://nildb-stg-n3.nillion.network');
+  console.error('   5. NILLION_NETWORK - testnet');
+  console.error('   6. NODE_ENV - production');
+  console.error('   7. PORT - 10000 (or Render will provide)');
+  console.error('   8. FRONTEND_URL - https://nillionvault-frontend.onrender.com');
+  process.exit(1);
+}
 
 const app = express();
 const PORT = process.env.PORT || 3001;
